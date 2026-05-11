@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0A0A0C</color>
+    <color name="surface">#111114</color>
+    <color name="elevated">#18181C</color>
+    <color name="border">#222228</color>
+    <color name="violet">#7C4DFF</color>
+    <color name="violet_dim">#3D2680</color>
+    <color name="pink">#E040FB</color>
+    <color name="green">#4CAF7D</color>
+    <color name="amber">#FFB74D</color>
+    <color name="red">#FF5252</color>
+    <color name="red_dim">#2A0A0A</color>
+    <color name="text_primary">#F0EEE8</color>
+    <color name="text_secondary">#9994A8</color>
+    <color name="text_tertiary">#4A4755</color>
+    <color name="white">#FFFFFF</color>
+</resources>

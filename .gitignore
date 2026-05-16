@@ -1,0 +1,51 @@
+# Android
+*.iml
+.gradle/
+local.properties
+/.idea/
+.DS_Store
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Java
+*.class
+*.log
+
+# Keystore files (important!)
+*.jks
+*.keystore
+
+# OS files
+*.DS_Store
+Thumbs.db
+
+# Gradle
+gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
+
+# Built application files
+*.apk
+*.aab
+
+# Files for reverse engineering
+*.ap_
+*.dex
+
+# Android Studio
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+
+# NDK
+obj/
+libs/
+
+# Local configuration file (should not be in git)
+local.properties

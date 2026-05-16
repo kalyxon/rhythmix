@@ -33,7 +33,9 @@ class StatsAdapter : ListAdapter<SongStats, StatsAdapter.VH>(DIFF) {
 
     override fun onBindViewHolder(h: VH, pos: Int) {
         val s = getItem(pos)
-        h.rank.text     = "${pos + 1}"
+        // Use bindingAdapterPosition for rank so it always reflects the real position
+        val rank = h.bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: pos
+        h.rank.text     = "${rank + 1}"
         h.title.text    = s.title
         h.artist.text   = s.artist
         h.plays.text    = "${s.playCount} plays"

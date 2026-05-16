@@ -46,6 +46,10 @@ class AnalyticsFragment : Fragment() {
         val adapter = StatsAdapter()
         binding.rvTopSongs.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTopSongs.adapter = adapter
+        binding.rvTopSongs.setHasFixedSize(false)
+        // isNestedScrollingEnabled=false lets the parent ScrollView handle scrolling
+        // while still measuring the RecyclerView to its FULL height (all items visible)
+        binding.rvTopSongs.isNestedScrollingEnabled = false
 
         viewModel.analytics.observe(viewLifecycleOwner) { data ->
             refreshDashboard(adapter, data.playEvents)

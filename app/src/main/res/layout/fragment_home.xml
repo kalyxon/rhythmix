@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="20dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="56dp"
+        android:paddingBottom="16dp"
         android:gravity="center_vertical">
 
         <LinearLayout
@@ -20,15 +23,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Good listening 🎵"
-                android:textSize="22sp"
+                android:text="Good listening 👋"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
-
             <TextView
                 android:id="@+id/tv_song_count"
                 android:layout_width="wrap_content"
@@ -38,144 +39,147 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/btn_settings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_preferences"
+            android:id="@+id/btn_search"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_search"
             android:background="@drawable/bg_icon_btn"
+            android:padding="10dp"
             app:tint="@color/text_secondary" />
     </LinearLayout>
 
-    <!-- Stats row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="14dp"
-            android:layout_marginEnd="8dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Today"
-                android:textSize="11sp"
-                android:textColor="@color/text_secondary" />
-            <TextView
-                android:id="@+id/tv_today_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0m"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/violet" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="14dp"
-            android:layout_marginEnd="8dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total"
-                android:textSize="11sp"
-                android:textColor="@color/text_secondary" />
-            <TextView
-                android:id="@+id/tv_total_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0m"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="14dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Plays"
-                android:textSize="11sp"
-                android:textColor="@color/text_secondary" />
-            <TextView
-                android:id="@+id/tv_total_plays"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Nav buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingBottom="16dp">
-
-        <Button
-            android:id="@+id/btn_library"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Library"
-            android:backgroundTint="@color/surface"
-            android:textColor="@color/text_primary"
-            android:layout_marginEnd="8dp" />
-
-        <Button
-            android:id="@+id/btn_analytics"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Analytics"
-            android:backgroundTint="@color/surface"
-            android:textColor="@color/text_primary" />
-    </LinearLayout>
-
-    <!-- Top songs -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Top Songs"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:paddingHorizontal="20dp"
-        android:paddingBottom="8dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_top_songs"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingBottom="80dp"
-        android:clipToPadding="false" />
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
-    <!-- Mini Player -->
-    <include
-        android:id="@+id/mini_player"
-        layout="@layout/layout_mini_player" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
 
+            <!-- Stats cards row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="16dp">
+
+                <!-- Today hero card -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1.2"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card_accent"
+                    android:padding="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="bottom">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TODAY"
+                        android:textSize="10sp"
+                        android:textColor="#99000000"
+                        android:letterSpacing="0.12"
+                        android:layout_marginBottom="4dp"/>
+                    <TextView
+                        android:id="@+id/tv_today_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0m"
+                        android:textColor="@color/black"
+                        android:textSize="32sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="listening"
+                        android:textSize="12sp"
+                        android:textColor="#99000000"/>
+                </LinearLayout>
+
+                <!-- Right column: total + plays -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_stat_card"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="bottom">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="TOTAL" android:textSize="9sp" android:textColor="@color/text_tertiary"
+                            android:letterSpacing="0.1"/>
+                        <TextView android:id="@+id/tv_total_time"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0m" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_stat_card"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:gravity="bottom">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="PLAYS" android:textSize="9sp" android:textColor="@color/text_tertiary"
+                            android:letterSpacing="0.1"/>
+                        <TextView android:id="@+id/tv_total_plays"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Top Songs header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="12dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Top Songs"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+                <TextView
+                    android:id="@+id/tv_see_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See all"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent"
+                    android:clickable="true"
+                    android:focusable="true"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_top_songs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

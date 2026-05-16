@@ -18,9 +18,8 @@ class LibraryFragment : Fragment() {
     private var _binding: FragmentLibraryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
-
     private lateinit var adapter: SongAdapter
-    private var searchQuery = ""
+    private var query = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentLibraryBinding.inflate(inflater, container, false)
@@ -30,64 +29,62 @@ class LibraryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener { viewModel.navigate(AppScreen.Home) }
-
-        // Sort chips
-        val chips = listOf(
-            binding.chipTitle to "title",
+        listOf(
+            binding.chipTitle  to "title",
             binding.chipArtist to "artist",
             binding.chipRecent to "recent"
-        )
-        chips.forEach { (chip, mode) ->
+        ).forEach { (chip, mode) ->
             chip.setOnClickListener {
                 viewModel.setSortMode(mode)
-                chips.forEach { (c, _) -> c.isChecked = false }
-                chip.isChecked = true
+                binding.chipTitle.isChecked  = mode == "title"
+                binding.chipArtist.isChecked = mode == "artist"
+                binding.chipRecent.isChecked = mode == "recent"
             }
         }
 
-        // Search
         binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                searchQuery = s?.toString() ?: ""
-                refreshList()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { query = s?.toString() ?: ""; refresh() }
+            override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) {}
+            override fun onTextChanged(s: CharSequence?, st: Int, b: Int, c: Int) {}
         })
 
         adapter = SongAdapter { song ->
-            val songs = getFilteredSongs()
-            val idx = songs.indexOfFirst { it.id == song.id }
-            viewModel.playerController.setQueue(songs, idx.coerceAtLeast(0))
+            // THE FIX: build the queue from exactly the list the user sees right now,
+            // then seek to the tapped song's position within that same list.
+            // Never mix indices from different list snapshots.
+            val currentList = filtered()
+            val idx = currentList.indexOfFirst { it.id == song.id }
+            if (idx != -1) {
+                viewModel.playerController.playQueue(currentList, idx)
+            }
             viewModel.navigate(AppScreen.Player)
         }
         binding.rvSongs.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSongs.adapter = adapter
 
-        viewModel.songs.observe(viewLifecycleOwner) { refreshList() }
-        viewModel.sortMode.observe(viewLifecycleOwner) { refreshList() }
-        refreshList()
+        viewModel.playerState.observe(viewLifecycleOwner) { state ->
+            adapter.currentSongId = state.currentSong?.id
+            adapter.notifyDataSetChanged()
+        }
+
+        viewModel.songs.observe(viewLifecycleOwner) { refresh() }
+        viewModel.sortMode.observe(viewLifecycleOwner) { refresh() }
+        refresh()
     }
 
-    private fun getFilteredSongs(): List<Song> {
-        val sorted = viewModel.getSortedSongs()
-        return if (searchQuery.isBlank()) sorted
-        else sorted.filter {
-            it.title.contains(searchQuery, ignoreCase = true) ||
-            it.artist.contains(searchQuery, ignoreCase = true) ||
-            it.album.contains(searchQuery, ignoreCase = true)
+    private fun filtered(): List<Song> {
+        val base = viewModel.getSortedSongs()
+        return if (query.isBlank()) base
+        else base.filter {
+            it.title.contains(query, true) || it.artist.contains(query, true)
         }
     }
 
-    private fun refreshList() {
-        val filtered = getFilteredSongs()
-        adapter.submitList(filtered)
-        binding.tvCount.text = "${filtered.size} songs"
+    private fun refresh() {
+        val list = filtered()
+        adapter.submitList(list)
+        binding.tvCount.text = "${list.size} songs"
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

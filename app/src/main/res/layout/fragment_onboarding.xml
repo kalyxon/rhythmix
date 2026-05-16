@@ -4,92 +4,147 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="♪"
-        android:textSize="72sp"
-        android:textColor="@color/violet"
-        android:layout_marginBottom="16dp" />
+    <!-- Hero top section -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/bg">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rhythmix"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:layout_marginBottom="8dp" />
+        <!-- Background music note decoration -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="♪"
+            android:textSize="200sp"
+            android:textColor="#0AFFFFFF"
+            android:layout_gravity="center"
+            android:rotation="-15" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your private music player"
-        android:textSize="16sp"
-        android:textColor="@color/text_secondary"
-        android:layout_marginBottom="48dp" />
+        <!-- Center content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="40dp">
 
-    <!-- Feature rows -->
+            <!-- Big icon -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_card_accent"
+                android:layout_marginBottom="32dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="♪"
+                    android:textSize="60sp"
+                    android:textColor="@color/black" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rhythmix"
+                android:textSize="42sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:letterSpacing="-0.02"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your private music universe.\nFully offline. Always yours."
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.4"
+                android:layout_marginBottom="8dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom sheet -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginBottom="40dp"
         android:background="@drawable/bg_card"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <!-- Feature list -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="20dp">
+            <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                android:background="@drawable/bg_card_accent" android:layout_marginEnd="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_gravity="center" android:text="🎵" android:textSize="18sp"/>
+            </FrameLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="All formats supported" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="MP3, FLAC, AAC, OGG and more" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="20dp">
+            <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                android:background="@drawable/bg_card_violet" android:layout_marginEnd="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_gravity="center" android:text="📊" android:textSize="18sp"/>
+            </FrameLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Reinstall-proof analytics" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Data saved in your music folder" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="32dp">
+            <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                android:background="@drawable/bg_card2" android:layout_marginEnd="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_gravity="center" android:text="🔒" android:textSize="18sp"/>
+            </FrameLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="100% Private &amp; Offline" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="No internet, no cloud, no tracking" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_pick_folder"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Choose Music Folder"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/accent"
+            android:layout_marginBottom="12dp" />
 
         <TextView
+            android:id="@+id/tv_saved_folder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🎵  Plays MP3, FLAC, AAC, OGG and more"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:layout_marginBottom="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📊  Analytics saved directly in your music folder"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:layout_marginBottom="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔄  Reinstall-proof — data survives uninstall"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:layout_marginBottom="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔒  100% offline &amp; private"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"/>
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_pick_folder"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Choose Music Folder"
-        android:textSize="16sp"
-        android:backgroundTint="@color/violet"
-        android:textColor="#FFFFFF" />
-
-    <TextView
-        android:id="@+id/tv_saved_folder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:visibility="gone" />
-
 </LinearLayout>

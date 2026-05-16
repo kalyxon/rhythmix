@@ -21,21 +21,15 @@ class ScanningFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.scanProgress.observe(viewLifecycleOwner) { progress ->
-            if (progress != null) {
-                val pct = if (progress.total > 0) {
-                    (progress.scanned * 100 / progress.total)
-                } else 0
+        viewModel.scanProgress.observe(viewLifecycleOwner) { p ->
+            if (p != null && p.total > 0) {
+                val pct = p.scanned * 100 / p.total
                 binding.progressBar.progress = pct
                 binding.tvProgress.text = "$pct%"
-                binding.tvCount.text = "${progress.scanned} of ${progress.total} songs"
+                binding.tvCount.text = "${p.scanned} of ${p.total} songs"
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

@@ -22,49 +22,33 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val mainActivity = requireActivity() as MainActivity
-
-        binding.btnBack.setOnClickListener { viewModel.navigate(AppScreen.Home) }
+        val main = requireActivity() as MainActivity
 
         binding.tvFolderPath.text = viewModel.storage.getSavedFolderName()
         binding.tvFolderUri.text = viewModel.storage.getSavedFolderUri()?.toString() ?: "—"
+        binding.tvDataFile.text = "rhythmix_data.json"
+        binding.tvDataNote.text =
+            "Analytics are saved directly inside your music folder. " +
+            "Uninstalling and reinstalling the app won't delete them — " +
+            "just pick the same folder again to restore everything."
 
-        viewModel.songs.observe(viewLifecycleOwner) { songs ->
-            binding.tvSongCount.text = "${songs.size} songs"
-        }
-        viewModel.analytics.observe(viewLifecycleOwner) { data ->
-            binding.tvEventCount.text = "${data.playEvents.size} play events"
-        }
+        viewModel.songs.observe(viewLifecycleOwner) { binding.tvSongCount.text = "${it.size}" }
+        viewModel.analytics.observe(viewLifecycleOwner) { binding.tvEventCount.text = "${it.playEvents.size}" }
 
-        binding.btnChangeFolder.setOnClickListener {
-            mainActivity.folderPickerLauncher.launch(null)
-        }
-
+        binding.btnChangeFolder.setOnClickListener { main.folderPickerLauncher.launch(null) }
         binding.btnRescan.setOnClickListener {
             viewModel.rescan()
             viewModel.navigate(AppScreen.Scanning)
         }
-
         binding.btnClearData.setOnClickListener {
             AlertDialog.Builder(requireContext())
-                .setTitle("Clear Listening History")
-                .setMessage("This will delete all analytics data from rhythmix_data.json in your music folder. Your music files will not be affected.\n\nThis cannot be undone.")
+                .setTitle("Clear History?")
+                .setMessage("All play history will be removed from rhythmix_data.json. Music files are untouched.")
                 .setPositiveButton("Clear") { _, _ -> viewModel.clearAnalytics() }
                 .setNegativeButton("Cancel", null)
                 .show()
         }
-
-        // Data file info
-        binding.tvDataFile.text = "rhythmix_data.json (in your music folder)"
-        binding.tvDataNote.text =
-            "Analytics are stored directly in your music folder as a JSON file. " +
-            "This means data persists even if you uninstall and reinstall this app — " +
-            "just choose the same folder again."
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

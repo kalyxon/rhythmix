@@ -12,49 +12,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="56dp"
+        android:paddingBottom="12dp"
         android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_media_previous"
-            android:background="@null"
-            app:tint="@color/text_primary" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Library"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:paddingStart="8dp" />
-
-        <TextView
-            android:id="@+id/tv_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Library"
+                android:textSize="28sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+            <TextView android:id="@+id/tv_count"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="13sp" android:textColor="@color/text_secondary" />
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Search -->
-    <EditText
-        android:id="@+id/et_search"
+    <!-- Search bar -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_search"
+        android:gravity="center_vertical"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_card"
-        android:hint="Search songs, artists…"
-        android:textColorHint="@color/text_secondary"
-        android:textColor="@color/text_primary"
-        android:paddingHorizontal="16dp"
-        android:inputType="text"
-        android:imeOptions="actionSearch" />
+        android:layout_marginBottom="14dp"
+        android:paddingHorizontal="16dp">
+
+        <ImageView android:layout_width="18dp" android:layout_height="18dp"
+            android:src="@drawable/ic_search" android:layout_marginEnd="10dp"
+            app:tint="@color/text_tertiary"/>
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Search songs, artists…"
+            android:textColorHint="@color/text_tertiary"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:singleLine="true" />
+    </LinearLayout>
 
     <!-- Sort chips -->
     <HorizontalScrollView
@@ -62,7 +65,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:scrollbars="none">
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,6 +101,8 @@
         android:id="@+id/rv_songs"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp" />
 
 </LinearLayout>

@@ -21,25 +21,14 @@ class OnboardingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val mainActivity = requireActivity() as MainActivity
-
-        binding.btnPickFolder.setOnClickListener {
-            // Launch the SAF folder picker — this is what gives us the persistent URI
-            mainActivity.folderPickerLauncher.launch(null)
+        (requireActivity() as MainActivity).also { main ->
+            binding.btnPickFolder.setOnClickListener { main.folderPickerLauncher.launch(null) }
         }
-
-        // Show saved folder name if returning user
-        val savedName = viewModel.storage.getSavedFolderName()
         if (viewModel.storage.hasSavedFolder()) {
             binding.tvSavedFolder.visibility = View.VISIBLE
-            binding.tvSavedFolder.text = "Last folder: $savedName"
-            binding.btnPickFolder.text = "Choose Music Folder"
+            binding.tvSavedFolder.text = "Last: ${viewModel.storage.getSavedFolderName()}"
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

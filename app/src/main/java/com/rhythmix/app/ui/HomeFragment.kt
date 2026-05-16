@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rhythmix.app.R
 import com.rhythmix.app.databinding.FragmentHomeBinding
 import com.rhythmix.app.ui.adapter.SongAdapter
 import java.util.concurrent.TimeUnit
@@ -16,6 +17,10 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var adapter: SongAdapter
+
+    // The exact list shown in the top-songs RecyclerView
+    private var currentTopSongs = listOf<com.rhythmix.app.model.Song>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -25,77 +30,56 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Navigation buttons
-        binding.btnLibrary.setOnClickListener { viewModel.navigate(AppScreen.Library) }
-        binding.btnAnalytics.setOnClickListener { viewModel.navigate(AppScreen.Analytics) }
-        binding.btnSettings.setOnClickListener { viewModel.navigate(AppScreen.Settings) }
+        binding.btnSearch.setOnClickListener { viewModel.navigate(AppScreen.Library) }
+        binding.tvSeeAll.setOnClickListener { viewModel.navigate(AppScreen.Library) }
 
-        // Mini player
-        binding.miniPlayer.root.setOnClickListener { viewModel.navigate(AppScreen.Player) }
-        binding.miniPlayer.btnPlayPause.setOnClickListener { viewModel.playerController.togglePlay() }
-        binding.miniPlayer.btnNext.setOnClickListener { viewModel.playerController.skipNext() }
-
-        // Top songs list
-        val adapter = SongAdapter { song ->
-            val songs = viewModel.getSortedSongs()
-            val idx = songs.indexOfFirst { it.id == song.id }
-            viewModel.playerController.setQueue(songs, idx.coerceAtLeast(0))
+        adapter = SongAdapter { song ->
+            // FIX: find index within the exact top-songs list shown on screen,
+            // then set that as the queue so indices are always in sync.
+            val idx = currentTopSongs.indexOfFirst { it.id == song.id }
+            if (idx != -1) {
+                viewModel.playerController.playQueue(currentTopSongs, idx)
+            }
+            viewModel.navigate(AppScreen.Player)
         }
         binding.rvTopSongs.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTopSongs.adapter = adapter
 
-        // Observe player state
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
-            val song = state.currentSong
-            binding.miniPlayer.root.visibility = if (song != null) View.VISIBLE else View.GONE
-            binding.miniPlayer.tvTitle.text = song?.title ?: ""
-            binding.miniPlayer.tvArtist.text = song?.artist ?: ""
-            binding.miniPlayer.btnPlayPause.setImageResource(
-                if (state.isPlaying) android.R.drawable.ic_media_pause
-                else android.R.drawable.ic_media_play
-            )
+            adapter.currentSongId = state.currentSong?.id
+            adapter.notifyDataSetChanged()
+            // Refresh time counters live while playing — positionMs ticks every 200ms
+            if (state.isPlaying) refreshStats()
         }
 
-        // Observe analytics
-        viewModel.analytics.observe(viewLifecycleOwner) { _ ->
-            updateStats()
-            updateTopSongs(adapter)
-        }
-
+        viewModel.analytics.observe(viewLifecycleOwner) { refreshStats() }
         viewModel.songs.observe(viewLifecycleOwner) { songs ->
             binding.tvSongCount.text = "${songs.size} songs"
+            refreshTopSongs()
         }
 
-        updateStats()
-        updateTopSongs(adapter)
+        refreshStats()
+        refreshTopSongs()
     }
 
-    private fun updateStats() {
-        val totalMs = viewModel.getTotalListeningTimeMs()
-        val todayMs = viewModel.getTodayListeningTimeMs()
-
-        binding.tvTotalTime.text = formatDuration(totalMs)
-        binding.tvTodayTime.text = formatDuration(todayMs)
-
-        val events = viewModel.analytics.value?.playEvents ?: emptyList()
-        binding.tvTotalPlays.text = "${events.size} plays"
+    private fun refreshStats() {
+        binding.tvTodayTime.text  = fmt(viewModel.getTodayListeningTimeMs())
+        binding.tvTotalTime.text  = fmt(viewModel.getTotalListeningTimeMs())
+        binding.tvTotalPlays.text = "${viewModel.analytics.value?.playEvents?.size ?: 0}"
     }
 
-    private fun updateTopSongs(adapter: SongAdapter) {
-        val topStats = viewModel.computeSongStats(5)
-        val songMap = viewModel.songs.value?.associateBy { it.id } ?: return
-        val topSongs = topStats.mapNotNull { songMap[it.songId] }
-        adapter.submitList(topSongs)
+    private fun refreshTopSongs() {
+        val stats  = viewModel.computeSongStats(8)
+        val map    = viewModel.songs.value?.associateBy { it.id } ?: return
+        currentTopSongs = stats.mapNotNull { map[it.songId] }  // keep in sync with adapter
+        adapter.submitList(currentTopSongs)
     }
 
-    private fun formatDuration(ms: Long): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(ms)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
-        return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+    private fun fmt(ms: Long): String {
+        val h = TimeUnit.MILLISECONDS.toHours(ms)
+        val m = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
+        return if (h > 0) "${h}h ${m}m" else "${m}m"
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

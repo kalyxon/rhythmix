@@ -1,9 +1,8 @@
-# Android
+# Android generated files
 *.iml
 .gradle/
 local.properties
 /.idea/
-.DS_Store
 /build/
 /captures/
 .externalNativeBuild/
@@ -13,25 +12,26 @@ local.properties
 *.class
 *.log
 
-# Keystore files (important!)
+# Keystore files (never commit these!)
 *.jks
 *.keystore
+*.key
 
 # OS files
-*.DS_Store
+.DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
-# Gradle
+# Gradle files
 gradle-wrapper.jar
 /gradle/wrapper/gradle-wrapper.properties
 
 # Built application files
 *.apk
 *.aab
-
-# Files for reverse engineering
 *.ap_
-*.dex
 
 # Android Studio
 .idea/
@@ -47,6 +47,22 @@ gradle-wrapper.jar
 obj/
 libs/
 
-# Local configuration file (should not be in git)
-local.properties
-local.properties
+# Generated files
+bin/
+gen/
+out/
+
+# Testing
+/androidTests/
+
+# Mac
+.DS_Store
+.AppleDouble
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*.orig

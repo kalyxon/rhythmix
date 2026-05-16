@@ -18,7 +18,7 @@
         android:paddingTop="56dp"
         android:paddingBottom="20dp" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -125,5 +125,5 @@
                 android:text="Clear Listening History"
                 android:backgroundTint="@color/red_dim" android:textColor="@color/red" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

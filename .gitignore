@@ -1,0 +1,71 @@
+# Android generated files
+*.iml
+.gradle/
+local.properties
+/.idea/
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Java
+*.class
+*.log
+
+# Keystore files (never commit these!)
+*.jks
+*.keystore
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Gradle files
+gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
+
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Android Studio
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+
+# NDK
+obj/
+libs/
+
+# Local configuration (important!)
+local.properties
+
+# Generated files
+bin/
+gen/
+out/
+
+# Testing
+/androidTests/
+
+# Mac
+.DS_Store
+.AppleDouble
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*.orig

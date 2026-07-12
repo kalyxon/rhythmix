@@ -12,27 +12,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="20dp"
+        android:paddingStart="24dp"
         android:paddingEnd="16dp"
         android:paddingTop="56dp"
-        android:paddingBottom="12dp"
+        android:paddingBottom="16dp"
         android:gravity="center_vertical">
 
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:orientation="vertical">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Library"
-                android:textSize="28sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                android:textSize="28sp" android:textStyle="bold" android:letterSpacing="-0.01" android:textColor="@color/text_primary" />
             <TextView android:id="@+id/tv_count"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textSize="13sp" android:textColor="@color/text_secondary" />
+                android:textSize="13sp" android:layout_marginTop="2dp" android:textColor="@color/text_secondary" />
         </LinearLayout>
     </LinearLayout>
 
     <!-- Search bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:background="@drawable/bg_search"
         android:gravity="center_vertical"
@@ -63,7 +63,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="10dp"
         android:scrollbars="none">
         <LinearLayout
             android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
                 android:text="Title"
                 android:checked="true"
                 android:layout_marginEnd="8dp"
-                style="@style/Widget.Material3.Chip.Filter" />
+                style="@style/Widget.Rhythmix.Chip" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_artist"
@@ -86,14 +86,14 @@
                 android:layout_height="wrap_content"
                 android:text="Artist"
                 android:layout_marginEnd="8dp"
-                style="@style/Widget.Material3.Chip.Filter" />
+                style="@style/Widget.Rhythmix.Chip" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_recent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Recent"
-                style="@style/Widget.Material3.Chip.Filter" />
+                style="@style/Widget.Rhythmix.Chip" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -103,6 +103,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:paddingHorizontal="8dp"
         android:paddingBottom="16dp" />
 
 </LinearLayout>

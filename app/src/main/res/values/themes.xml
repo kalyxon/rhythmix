@@ -1,23 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="Theme.Rhythmix" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Brand -->
         <item name="colorPrimary">@color/accent</item>
-        <item name="colorPrimaryVariant">@color/accent_dim</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/accent_on</item>
+        <item name="colorPrimaryContainer">@color/accent_dim</item>
+        <item name="colorOnPrimaryContainer">@color/accent_light</item>
         <item name="colorSecondary">@color/violet</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Surfaces -->
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface2</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
         <item name="android:colorBackground">@color/bg</item>
-        <item name="android:windowBackground">@color/bg</item>
+        <item name="colorOutline">@color/surface_border</item>
+
+        <!-- System bars: fully immersive, edge-to-edge -->
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:navigationBarColor">@color/nav_bg</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- Type -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+
+        <!-- Widgets -->
+        <item name="chipStyle">@style/Widget.Rhythmix.Chip</item>
     </style>
 
-    <!-- Bottom nav style -->
-    <style name="NavLabel" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">10sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+    <!-- Filter chips restyled to sit on dark surfaces with the green accent when checked -->
+    <style name="Widget.Rhythmix.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/surface2</item>
+        <item name="chipStrokeColor">@color/surface_border</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="chipCornerRadius">100dp</item>
+        <item name="checkedIconVisible">false</item>
     </style>
+
 </resources>

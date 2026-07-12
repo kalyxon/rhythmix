@@ -13,8 +13,9 @@
         android:text="Settings"
         android:textSize="28sp"
         android:textStyle="bold"
+        android:letterSpacing="-0.01"
         android:textColor="@color/text_primary"
-        android:paddingStart="20dp"
+        android:paddingStart="24dp"
         android:paddingTop="56dp"
         android:paddingBottom="20dp" />
 
@@ -44,11 +45,11 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical"
                     android:layout_marginBottom="16dp">
-                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp"
+                    <FrameLayout android:layout_width="42dp" android:layout_height="42dp"
                         android:background="@drawable/bg_card_accent" android:layout_marginEnd="14dp">
                         <ImageView android:layout_width="20dp" android:layout_height="20dp"
                             android:layout_gravity="center" android:src="@drawable/ic_folder"
-                            app:tint="@color/black"/>
+                            app:tint="@color/accent_on"/>
                     </FrameLayout>
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -86,13 +87,15 @@
             <Button android:id="@+id/btn_change_folder"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:text="Change Music Folder"
-                android:backgroundTint="@color/surface" android:textColor="@color/text_primary"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/surface2" android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
             <Button android:id="@+id/btn_rescan"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:text="Rescan Folder"
-                android:backgroundTint="@color/surface" android:textColor="@color/text_primary"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/surface2" android:textColor="@color/text_primary"
                 android:layout_marginBottom="20dp" />
 
             <!-- Privacy card -->
@@ -123,6 +126,7 @@
             <Button android:id="@+id/btn_clear_data"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:text="Clear Listening History"
+                android:textAllCaps="false"
                 android:backgroundTint="@color/red_dim" android:textColor="@color/red" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

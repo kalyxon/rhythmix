@@ -2,11 +2,12 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="68dp"
+    android:layout_height="70dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingHorizontal="20dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:paddingHorizontal="12dp"
+    android:layout_marginHorizontal="8dp"
+    android:background="@drawable/bg_ripple_row">
 
     <FrameLayout
         android:id="@+id/art_bg"
@@ -42,6 +43,7 @@
             android:id="@+id/tv_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:textSize="12sp"
             android:textColor="@color/text_secondary"
             android:maxLines="1"

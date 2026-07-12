@@ -66,8 +66,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 loadAnalyticsFromFolder(uri)
 
                 // Try song cache first — avoids rescanning every launch
-                val cached = storage.loadSongsFromCache()
-                if (cached != null && cached.isNotEmpty()) {
+                val cached: List<Song> = storage.loadSongsFromCache().orEmpty()
+                if (cached.isNotEmpty()) {
                     Log.i(TAG, "Restored ${cached.size} songs from cache")
                     _songs.postValue(cached)
                     playerController.setQueue(cached, 0)

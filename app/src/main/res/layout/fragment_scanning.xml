@@ -9,8 +9,8 @@
     android:paddingHorizontal="48dp">
 
     <FrameLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
         android:background="@drawable/bg_card_accent"
         android:layout_marginBottom="36dp">
         <TextView
@@ -19,7 +19,7 @@
             android:layout_gravity="center"
             android:text="♪"
             android:textSize="52sp"
-            android:textColor="@color/black" />
+            android:textColor="@color/accent_on" />
     </FrameLayout>
 
     <TextView
@@ -28,6 +28,7 @@
         android:text="Scanning music"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:letterSpacing="-0.01"
         android:textColor="@color/text_primary"
         android:layout_marginBottom="8dp" />
 

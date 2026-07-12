@@ -1,33 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#0D0D0D</color>
-    <color name="bg2">#111111</color>
-    <color name="surface">#1A1A1A</color>
-    <color name="surface2">#222222</color>
-    <color name="elevated">#2A2A2A</color>
-    <color name="border">#2E2E2E</color>
 
-    <color name="accent">#C8FF00</color>
-    <color name="accent_dim">#3A4700</color>
-    <color name="violet">#9B6DFF</color>
-    <color name="violet_dim">#1E1433</color>
-    <color name="pink">#FF4D8F</color>
-    <color name="cyan">#00D4FF</color>
-    <color name="orange">#FF8C42</color>
-    <color name="green">#1DB954</color>
-    <color name="green_dim">#0D2E17</color>
-    <color name="amber">#FFB830</color>
-    <color name="red">#FF4444</color>
-    <color name="red_dim">#2A0A0A</color>
+    <!-- ===== Base surfaces (true-black, layered depth like Spotify/Apple Music) ===== -->
+    <color name="bg">#0A0A0B</color>
+    <color name="surface">#161618</color>
+    <color name="surface2">#212125</color>
+    <color name="elevated">#2B2B30</color>
+    <color name="nav_bg">#101012</color>
+    <color name="surface_border">#26FFFFFF</color>
+    <color name="hairline">#14FFFFFF</color>
 
+    <!-- ===== Text ===== -->
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#A0A0A0</color>
-    <color name="text_tertiary">#555555</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <color name="text_secondary">#A8A8AF</color>
+    <color name="text_tertiary">#6E6E77</color>
 
-    <!-- Nav bar -->
-    <color name="nav_bg">#111111</color>
-    <color name="nav_active">#C8FF00</color>
-    <color name="nav_inactive">#555555</color>
+    <!-- ===== Primary accent: green ===== -->
+    <color name="accent">#1ED760</color>
+    <color name="accent_light">#3BE87A</color>
+    <color name="accent_dark">#12A34A</color>
+    <color name="accent_dim">#17281D</color>
+    <color name="accent_on">#04140A</color>
+
+    <!-- ===== Secondary accents (used for stat variety) ===== -->
+    <color name="violet">#A78BFA</color>
+    <color name="violet_light">#C4B1FF</color>
+    <color name="violet_dim">#241E38</color>
+
+    <color name="amber">#FBBF24</color>
+    <color name="amber_dim">#332A12</color>
+
+    <color name="green">#34E4A0</color>
+
+    <!-- ===== Heatmap scale (dim → bright, matches accent) ===== -->
+    <color name="heatmap_0">#1B1B1F</color>
+    <color name="heatmap_1">#163A26</color>
+    <color name="heatmap_2">#1F6B41</color>
+    <color name="heatmap_3">#23A85B</color>
+    <color name="heatmap_4">#3BE87A</color>
+
+    <!-- ===== Status ===== -->
+    <color name="red">#FF6B6B</color>
+    <color name="red_dim">#33191A</color>
+
+    <!-- ===== Nav ===== -->
+    <color name="nav_active">#1ED760</color>
+    <color name="nav_inactive">#6E6E77</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>

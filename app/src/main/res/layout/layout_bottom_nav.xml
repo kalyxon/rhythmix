@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Root stays transparent + full-width (same id/type Kotlin already toggles visibility on).
+  The actual visual bar is the inner "tabs" capsule below, inset from both edges and the
+  bottom, so it reads as a floating dock instead of an edge-to-edge bar.
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_nav_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_nav"
-    android:orientation="vertical"
-    android:paddingBottom="4dp"
-    android:elevation="16dp">
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
 
-    <!-- Mini player (shown when playing) -->
+    <!-- Mini player (shown when playing) - its own floating card -->
     <include
         android:id="@+id/mini_player"
         layout="@layout/layout_mini_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="10dp"
         android:visibility="gone" />
 
-    <!-- Nav tabs -->
+    <!-- Floating pill nav dock -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="66dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_nav_floating"
+        android:elevation="20dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -32,12 +39,12 @@
             android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true"
             android:background="?android:attr/selectableItemBackgroundBorderless">
             <ImageView android:id="@+id/nav_home_icon"
-                android:layout_width="24dp" android:layout_height="24dp"
+                android:layout_width="22dp" android:layout_height="22dp"
                 android:src="@drawable/ic_home" app:tint="@color/nav_active" />
             <TextView android:id="@+id/nav_home_label"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Home" android:textSize="10sp" android:textColor="@color/nav_active"
-                android:layout_marginTop="5dp" android:textStyle="bold"/>
+                android:layout_marginTop="4dp" android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout android:id="@+id/nav_library"
@@ -45,12 +52,12 @@
             android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true"
             android:background="?android:attr/selectableItemBackgroundBorderless">
             <ImageView android:id="@+id/nav_library_icon"
-                android:layout_width="24dp" android:layout_height="24dp"
+                android:layout_width="22dp" android:layout_height="22dp"
                 android:src="@drawable/ic_library" app:tint="@color/nav_inactive" />
             <TextView android:id="@+id/nav_library_label"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Library" android:textSize="10sp" android:textColor="@color/nav_inactive"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
 
         <LinearLayout android:id="@+id/nav_analytics"
@@ -58,12 +65,12 @@
             android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true"
             android:background="?android:attr/selectableItemBackgroundBorderless">
             <ImageView android:id="@+id/nav_analytics_icon"
-                android:layout_width="24dp" android:layout_height="24dp"
+                android:layout_width="22dp" android:layout_height="22dp"
                 android:src="@drawable/ic_analytics" app:tint="@color/nav_inactive" />
             <TextView android:id="@+id/nav_analytics_label"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Stats" android:textSize="10sp" android:textColor="@color/nav_inactive"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
 
         <LinearLayout android:id="@+id/nav_settings"
@@ -71,12 +78,12 @@
             android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true"
             android:background="?android:attr/selectableItemBackgroundBorderless">
             <ImageView android:id="@+id/nav_settings_icon"
-                android:layout_width="24dp" android:layout_height="24dp"
+                android:layout_width="22dp" android:layout_height="22dp"
                 android:src="@drawable/ic_settings" app:tint="@color/nav_inactive" />
             <TextView android:id="@+id/nav_settings_label"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Settings" android:textSize="10sp" android:textColor="@color/nav_inactive"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
 
     </LinearLayout>

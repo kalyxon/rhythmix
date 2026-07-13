@@ -14,12 +14,12 @@
         android:paddingStart="24dp"
         android:paddingEnd="16dp"
         android:paddingTop="56dp"
-        android:paddingBottom="20dp">
+        android:paddingBottom="18dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Your Stats"
-            android:textSize="28sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:letterSpacing="-0.01"
             android:textColor="@color/text_primary" />
@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
-                android:paddingBottom="10dp">
+                android:paddingBottom="12dp">
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="136dp"
+                <LinearLayout android:layout_width="0dp" android:layout_height="128dp"
                     android:layout_weight="1" android:orientation="vertical"
                     android:background="@drawable/bg_card_accent" android:padding="20dp"
                     android:layout_marginEnd="10dp" android:gravity="bottom">
@@ -56,14 +56,12 @@
                     <TextView android:id="@+id/tv_today_listening"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="0m" android:textColor="@color/accent_on"
-                        android:textSize="34sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="listening" android:textSize="12sp" android:alpha="0.75" android:textColor="@color/accent_on"/>
+                        android:textSize="32sp" android:textStyle="bold" android:letterSpacing="-0.02"/>
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="136dp"
+                <LinearLayout android:layout_width="0dp" android:layout_height="128dp"
                     android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="20dp"
+                    android:background="@drawable/bg_card" android:padding="20dp"
                     android:gravity="bottom">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="ALL TIME" android:textSize="10sp" android:textColor="@color/text_tertiary"
@@ -71,80 +69,86 @@
                     <TextView android:id="@+id/tv_total_listening"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="0m" android:textColor="@color/text_primary"
-                        android:textSize="34sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="total" android:textSize="12sp" android:textColor="@color/text_tertiary"/>
+                        android:textSize="32sp" android:textStyle="bold" android:letterSpacing="-0.02"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 3-stat row -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingBottom="10dp">
+            <!-- KPI strip #1: Plays | Songs | Done% - one unified card, divided -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="10dp"
+                android:paddingVertical="16dp">
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="92dp"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="14dp"
-                    android:layout_marginEnd="8dp" android:gravity="bottom">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="PLAYS" android:textColor="@color/text_tertiary"
-                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="4dp"/>
+                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="5dp"/>
                     <TextView android:id="@+id/tv_total_plays"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="0" android:textColor="@color/accent"
-                        android:textSize="22sp" android:textStyle="bold"/>
+                        android:textSize="21sp" android:textStyle="bold"/>
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="92dp"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="14dp"
-                    android:layout_marginEnd="8dp" android:gravity="bottom">
+                <View android:layout_width="1dp" android:layout_height="36dp" android:background="@color/hairline"/>
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="SONGS" android:textColor="@color/text_tertiary"
-                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="4dp"/>
+                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="5dp"/>
                     <TextView android:id="@+id/tv_unique_songs"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="0" android:textColor="@color/violet"
-                        android:textSize="22sp" android:textStyle="bold"/>
+                        android:textSize="21sp" android:textStyle="bold"/>
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="92dp"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="14dp"
-                    android:gravity="bottom">
+                <View android:layout_width="1dp" android:layout_height="36dp" android:background="@color/hairline"/>
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="DONE %" android:textColor="@color/text_tertiary"
-                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="4dp"/>
+                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="5dp"/>
                     <TextView android:id="@+id/tv_completion_rate"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="—" android:textColor="@color/green"
-                        android:textSize="22sp" android:textStyle="bold"/>
+                        android:textSize="21sp" android:textStyle="bold"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 2-stat row -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingBottom="20dp">
+            <!-- KPI strip #2: Avg listen | Peak hour -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="20dp"
+                android:paddingVertical="16dp">
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="80dp"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="14dp"
-                    android:layout_marginEnd="8dp" android:gravity="bottom">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="AVG LISTEN" android:textColor="@color/text_tertiary"
-                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="4dp"/>
+                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="5dp"/>
                     <TextView android:id="@+id/tv_avg_session"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="—" android:textColor="@color/text_primary"
                         android:textSize="18sp" android:textStyle="bold"/>
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp" android:layout_height="80dp"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:background="@drawable/bg_stat_card" android:padding="14dp"
-                    android:gravity="bottom">
+                <View android:layout_width="1dp" android:layout_height="36dp" android:background="@color/hairline"/>
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="PEAK HOUR" android:textColor="@color/text_tertiary"
-                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="4dp"/>
+                        android:textSize="9sp" android:letterSpacing="0.1" android:layout_marginBottom="5dp"/>
                     <TextView android:id="@+id/tv_peak_hour"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="—" android:textColor="@color/amber"
@@ -152,19 +156,16 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ═══════════════════════════════════════════════════════ -->
-            <!-- GITHUB-STYLE LISTENING HEATMAP -->
-            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- Listening heatmap -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_stat_card"
+                android:background="@drawable/bg_card"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="20dp"
                 android:padding="16dp">
 
-                <!-- Heatmap header -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical"
                     android:layout_marginBottom="12dp">
@@ -177,7 +178,6 @@
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:textSize="11sp" android:textColor="@color/text_tertiary"/>
                     </LinearLayout>
-                    <!-- Legend -->
                     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:gravity="center_vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -198,7 +198,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Everything scrolls together: month labels + day labels + grid -->
                 <HorizontalScrollView
                     android:id="@+id/heatmap_scroll"
                     android:layout_width="match_parent"
@@ -206,33 +205,28 @@
                     android:scrollbars="none"
                     android:overScrollMode="never">
 
-                    <!-- Outer: day-label column (fixed) + right column (month row + grid) -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <!-- Fixed day-of-week labels — built in code to match exact cell size -->
                         <LinearLayout
                             android:id="@+id/heatmap_day_labels"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
 
-                        <!-- Right side: month labels row on top, grid below -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <!-- Month labels — same width as grid, scrolls with it -->
                             <LinearLayout
                                 android:id="@+id/heatmap_month_labels"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal" />
 
-                            <!-- The week columns grid -->
                             <LinearLayout
                                 android:id="@+id/heatmap_grid"
                                 android:layout_width="wrap_content"

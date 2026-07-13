@@ -7,16 +7,30 @@
     android:background="@color/bg"
     android:orientation="vertical">
 
-    <!-- Header -->
+    <!-- Header: avatar chip + greeting + search -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="24dp"
+        android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingTop="56dp"
         android:paddingBottom="20dp"
         android:gravity="center_vertical">
+
+        <FrameLayout
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_avatar"
+            android:layout_marginEnd="14dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="♪"
+                android:textSize="20sp"
+                android:textColor="@color/accent_on" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -26,8 +40,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Good listening 👋"
-                android:textSize="28sp"
+                android:text="Good listening"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:letterSpacing="-0.01"
                 android:textColor="@color/text_primary" />
@@ -35,18 +49,18 @@
                 android:id="@+id/tv_song_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:layout_marginTop="1dp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_search"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:src="@drawable/ic_search"
             android:background="@drawable/bg_icon_btn"
-            android:padding="11dp"
+            android:padding="10dp"
             app:tint="@color/text_secondary" />
     </LinearLayout>
 
@@ -63,90 +77,77 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <!-- Stats cards row -->
+            <!-- Hero: today card with decorative eq bars + a single divided strip for total/plays -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="20dp">
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_accent"
+                android:padding="22dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp">
 
-                <!-- Today hero card -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="136dp"
-                    android:layout_weight="1.2"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_card_accent"
-                    android:padding="20dp"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="bottom">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="TODAY"
-                        android:textSize="10sp"
-                        android:textColor="@color/accent_on"
-                        android:letterSpacing="0.14"
-                        android:alpha="0.75"
-                        android:layout_marginBottom="4dp"/>
-                    <TextView
-                        android:id="@+id/tv_today_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0m"
-                        android:textColor="@color/accent_on"
-                        android:textSize="34sp"
-                        android:textStyle="bold"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="listening"
-                        android:textSize="12sp"
-                        android:alpha="0.75"
-                        android:textColor="@color/accent_on"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="TODAY" android:textSize="10sp" android:textColor="@color/accent_on"
+                            android:letterSpacing="0.14" android:alpha="0.75" android:layout_marginBottom="4dp"/>
+                        <TextView
+                            android:id="@+id/tv_today_time"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0m" android:textColor="@color/accent_on"
+                            android:textSize="36sp" android:textStyle="bold" android:letterSpacing="-0.02"/>
+                    </LinearLayout>
+                    <!-- Decorative equalizer bars -->
+                    <LinearLayout
+                        android:layout_width="wrap_content" android:layout_height="40dp"
+                        android:orientation="horizontal" android:gravity="bottom">
+                        <View android:layout_width="5dp" android:layout_height="18dp" android:background="@drawable/bg_waveform_bar" android:layout_marginEnd="4dp" android:alpha="0.55"/>
+                        <View android:layout_width="5dp" android:layout_height="34dp" android:background="@drawable/bg_waveform_bar" android:layout_marginEnd="4dp" android:alpha="0.7"/>
+                        <View android:layout_width="5dp" android:layout_height="26dp" android:background="@drawable/bg_waveform_bar" android:layout_marginEnd="4dp" android:alpha="0.85"/>
+                        <View android:layout_width="5dp" android:layout_height="40dp" android:background="@drawable/bg_waveform_bar" android:layout_marginEnd="4dp"/>
+                        <View android:layout_width="5dp" android:layout_height="22dp" android:background="@drawable/bg_waveform_bar" android:alpha="0.6"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!-- Right column: total + plays -->
+                <!-- Divided strip: Total | Plays, sitting inside the hero on a translucent inset -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="136dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="18dp"
+                    android:background="#1A04140E"
+                    android:paddingVertical="12dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_stat_card"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp"
-                        android:layout_marginBottom="8dp"
-                        android:gravity="bottom">
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:orientation="vertical" android:gravity="center" android:paddingHorizontal="8dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="TOTAL" android:textSize="9sp" android:textColor="@color/text_tertiary"
-                            android:letterSpacing="0.12"/>
+                            android:text="TOTAL" android:textSize="9sp" android:textColor="@color/accent_on" android:alpha="0.65" android:letterSpacing="0.1"/>
                         <TextView android:id="@+id/tv_total_time"
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="0m" android:textSize="19sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+                            android:text="0m" android:textSize="17sp" android:textStyle="bold" android:textColor="@color/accent_on"/>
                     </LinearLayout>
 
+                    <View android:layout_width="1dp" android:layout_height="28dp" android:background="#2604140E"/>
+
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_stat_card"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp"
-                        android:gravity="bottom">
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:orientation="vertical" android:gravity="center" android:paddingHorizontal="8dp">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="PLAYS" android:textSize="9sp" android:textColor="@color/text_tertiary"
-                            android:letterSpacing="0.12"/>
+                            android:text="PLAYS" android:textSize="9sp" android:textColor="@color/accent_on" android:alpha="0.65" android:letterSpacing="0.1"/>
                         <TextView android:id="@+id/tv_total_plays"
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="0" android:textSize="19sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+                            android:text="0" android:textSize="17sp" android:textStyle="bold" android:textColor="@color/accent_on"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -157,14 +158,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp"
-                android:paddingBottom="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="10dp"
                 android:gravity="center_vertical">
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Top Songs"
-                    android:textSize="19sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:letterSpacing="-0.01"
                     android:textColor="@color/text_primary" />

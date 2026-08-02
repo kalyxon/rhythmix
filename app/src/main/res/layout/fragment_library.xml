@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="@drawable/bg_shell"
     android:orientation="vertical">
 
     <!-- Header -->
@@ -32,7 +32,7 @@
     <!-- Search bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="52dp"
         android:orientation="horizontal"
         android:background="@drawable/bg_search"
         android:gravity="center_vertical"
@@ -103,7 +103,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="4dp"
         android:paddingBottom="16dp" />
 
 </LinearLayout>

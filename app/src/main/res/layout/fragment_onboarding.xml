@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="@drawable/bg_shell"
     android:orientation="vertical">
 
     <!-- Hero top section -->
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/bg">
+        android:background="@drawable/bg_shell">
 
         <!-- Background music note decoration -->
         <TextView
@@ -135,7 +135,7 @@
             android:textStyle="bold"
             android:textAllCaps="false"
             android:textColor="@color/accent_on"
-            android:backgroundTint="@color/accent"
+            android:background="@drawable/bg_card_accent"
             android:layout_marginBottom="12dp" />
 
         <TextView

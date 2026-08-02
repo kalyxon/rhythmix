@@ -21,6 +21,7 @@ class HomeFragment : Fragment() {
 
     // The exact list shown in the top-songs RecyclerView
     private var currentTopSongs = listOf<com.rhythmix.app.model.Song>()
+    private var lastHighlightedSongId: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -46,8 +47,14 @@ class HomeFragment : Fragment() {
         binding.rvTopSongs.adapter = adapter
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
-            adapter.currentSongId = state.currentSong?.id
-            adapter.notifyDataSetChanged()
+            val songId = state.currentSong?.id
+            if (songId != lastHighlightedSongId) {
+                lastHighlightedSongId = songId
+                adapter.currentSongId = songId
+                adapter.notifyDataSetChanged()
+            } else {
+                adapter.currentSongId = songId
+            }
             // Refresh time counters live while playing — positionMs ticks every 200ms
             if (state.isPlaying) refreshStats()
         }

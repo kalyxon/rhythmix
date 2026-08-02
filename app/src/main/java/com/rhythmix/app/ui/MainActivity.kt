@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     val viewModel: MainViewModel by viewModels()
+    private var currentScreen: AppScreen? = null
+    private var currentFragment: Fragment? = null
 
     val folderPickerLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
@@ -52,14 +54,17 @@ class MainActivity : AppCompatActivity() {
 
         // Observe screen changes
         viewModel.screen.observe(this) { screen ->
+            if (screen == currentScreen) return@observe
+            currentScreen = screen
+
             when (screen) {
-                AppScreen.Onboarding -> { showFragment(OnboardingFragment()); showNav(false) }
-                AppScreen.Scanning   -> { showFragment(ScanningFragment());   showNav(false) }
-                AppScreen.Player     -> { showFragment(PlayerFragment());      showNav(false) }
-                AppScreen.Home       -> { showFragment(HomeFragment());        showNav(true); setNavActive(0) }
-                AppScreen.Library    -> { showFragment(LibraryFragment());     showNav(true); setNavActive(1) }
-                AppScreen.Analytics  -> { showFragment(AnalyticsFragment());   showNav(true); setNavActive(2) }
-                AppScreen.Settings   -> { showFragment(SettingsFragment());    showNav(true); setNavActive(3) }
+                AppScreen.Onboarding -> { showFragment(screen, OnboardingFragment()); showNav(false) }
+                AppScreen.Scanning   -> { showFragment(screen, ScanningFragment());   showNav(false) }
+                AppScreen.Player     -> { showFragment(screen, PlayerFragment());      showNav(false) }
+                AppScreen.Home       -> { showFragment(screen, HomeFragment());        showNav(true); setNavActive(0) }
+                AppScreen.Library    -> { showFragment(screen, LibraryFragment());     showNav(true); setNavActive(1) }
+                AppScreen.Analytics  -> { showFragment(screen, AnalyticsFragment());   showNav(true); setNavActive(2) }
+                AppScreen.Settings   -> { showFragment(screen, SettingsFragment());    showNav(true); setNavActive(3) }
             }
         }
 
@@ -93,10 +98,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+    private fun showFragment(screen: AppScreen, fragment: Fragment) {
+        val tag = screen.javaClass.name
+        val fm = supportFragmentManager
+        val target = fm.findFragmentByTag(tag) ?: fragment
+
+        fm.beginTransaction().apply {
+            currentFragment?.let { hide(it) }
+            if (target.isAdded) {
+                show(target)
+            } else {
+                add(R.id.fragment_container, target, tag)
+            }
+        }.commit()
+
+        currentFragment = target
     }
 
     private fun showNav(visible: Boolean) {

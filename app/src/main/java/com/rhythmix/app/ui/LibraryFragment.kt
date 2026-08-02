@@ -20,6 +20,7 @@ class LibraryFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var adapter: SongAdapter
     private var query = ""
+    private var lastHighlightedSongId: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentLibraryBinding.inflate(inflater, container, false)
@@ -63,8 +64,14 @@ class LibraryFragment : Fragment() {
         binding.rvSongs.adapter = adapter
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
-            adapter.currentSongId = state.currentSong?.id
-            adapter.notifyDataSetChanged()
+            val songId = state.currentSong?.id
+            if (songId != lastHighlightedSongId) {
+                lastHighlightedSongId = songId
+                adapter.currentSongId = songId
+                adapter.notifyDataSetChanged()
+            } else {
+                adapter.currentSongId = songId
+            }
         }
 
         viewModel.songs.observe(viewLifecycleOwner) { refresh() }

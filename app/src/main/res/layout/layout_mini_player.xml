@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="66dp"
-    android:background="@drawable/bg_mini_player"
+    android:background="@drawable/bg_card"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingHorizontal="12dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:elevation="4dp">
+    android:elevation="8dp">
 
     <!-- Album art thumbnail -->
     <FrameLayout

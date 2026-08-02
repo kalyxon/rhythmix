@@ -14,7 +14,9 @@ import com.rhythmix.app.model.SongStats
 import com.rhythmix.app.player.PlayerController
 import com.rhythmix.app.player.PlayerState
 import com.rhythmix.app.storage.StorageManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 sealed class AppScreen {
     object Onboarding : AppScreen()
@@ -66,7 +68,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 loadAnalyticsFromFolder(uri)
 
                 // Try song cache first — avoids rescanning every launch
-                val cached: List<Song> = storage.loadSongsFromCache().orEmpty()
+                val cached: List<Song> = withContext(Dispatchers.IO) {
+                    storage.loadSongsFromCache().orEmpty()
+                }
                 if (cached.isNotEmpty()) {
                     Log.i(TAG, "Restored ${cached.size} songs from cache")
                     _songs.postValue(cached)

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Base Theme: Emerald (Spotify Lime Green) -->
     <style name="Theme.Rhythmix" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Brand -->
-        <item name="colorPrimary">@color/accent</item>
-        <item name="colorOnPrimary">@color/accent_on</item>
-        <item name="colorPrimaryContainer">@color/accent_dim</item>
-        <item name="colorOnPrimaryContainer">@color/accent_light</item>
+        <item name="colorPrimary">@color/emerald_accent</item>
+        <item name="colorOnPrimary">@color/emerald_on</item>
+        <item name="colorPrimaryContainer">@color/emerald_dim</item>
+        <item name="colorOnPrimaryContainer">@color/emerald_light</item>
         <item name="colorSecondary">@color/violet</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!-- Surfaces -->
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorSurfaceVariant">@color/surface2</item>
@@ -18,7 +17,6 @@
         <item name="android:colorBackground">@color/bg</item>
         <item name="colorOutline">@color/surface_border</item>
 
-        <!-- System bars: fully immersive, edge-to-edge -->
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:navigationBarColor">@color/nav_bg</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
@@ -26,20 +24,55 @@
         <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
 
-        <!-- Type -->
         <item name="android:fontFamily">sans-serif</item>
         <item name="fontFamily">sans-serif</item>
 
-        <!-- Widgets -->
         <item name="chipStyle">@style/Widget.Rhythmix.Chip</item>
     </style>
 
-    <!-- Filter chips restyled to sit on dark surfaces with the green accent when checked -->
+    <!-- Theme 2: Cyberpunk Neon -->
+    <style name="Theme.Rhythmix.Cyberpunk" parent="Theme.Rhythmix">
+        <item name="colorPrimary">@color/cyber_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/cyber_dim</item>
+        <item name="colorOnPrimaryContainer">@color/cyber_light</item>
+        <item name="colorSecondary">@color/cyber_pink</item>
+    </style>
+
+    <!-- Theme 3: Sunset Amber -->
+    <style name="Theme.Rhythmix.Sunset" parent="Theme.Rhythmix">
+        <item name="colorPrimary">@color/sunset_accent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/sunset_dim</item>
+        <item name="colorOnPrimaryContainer">@color/sunset_light</item>
+        <item name="colorSecondary">@color/sunset_coral</item>
+    </style>
+
+    <!-- Theme 4: Oceanic Cyan -->
+    <style name="Theme.Rhythmix.Cyan" parent="Theme.Rhythmix">
+        <item name="colorPrimary">@color/cyan_accent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/cyan_dim</item>
+        <item name="colorOnPrimaryContainer">@color/cyan_light</item>
+        <item name="colorSecondary">@color/cyan_blue</item>
+    </style>
+
+    <!-- Theme 5: AMOLED Midnight -->
+    <style name="Theme.Rhythmix.Amoled" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/amoled_bg</item>
+        <item name="colorSurface">@color/amoled_surface</item>
+        <item name="colorSurfaceVariant">#141416</item>
+        <item name="colorPrimary">@color/amoled_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/amoled_dim</item>
+        <item name="colorOnPrimaryContainer">@color/amoled_light</item>
+    </style>
+
     <style name="Widget.Rhythmix.Chip" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@color/surface2</item>
+        <item name="chipBackgroundColor">@color/chip_background</item>
         <item name="chipStrokeColor">@color/surface_border</item>
-        <item name="chipStrokeWidth">1dp</item>
-        <item name="android:textColor">@color/text_secondary</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textColor">@color/chip_text</item>
         <item name="chipCornerRadius">100dp</item>
         <item name="checkedIconVisible">false</item>
     </style>

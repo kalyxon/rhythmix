@@ -1,38 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ===== Base surfaces (true-black, layered depth like Spotify/Apple Music) ===== -->
-    <color name="bg">#0A0A0B</color>
-    <color name="surface">#161618</color>
-    <color name="surface2">#212125</color>
-    <color name="elevated">#2B2B30</color>
-    <color name="nav_bg">#101012</color>
-    <color name="surface_border">#26FFFFFF</color>
-    <color name="hairline">#14FFFFFF</color>
+    <!-- ===== Base surfaces ===== -->
+    <color name="bg">#171A10</color>
+    <color name="surface">#202417</color>
+    <color name="surface2">#2A301D</color>
+    <color name="elevated">#343B24</color>
+    <color name="nav_bg">#202516</color>
+    <color name="surface_border">#33D6E4B0</color>
+    <color name="hairline">#1EFFFFFF</color>
 
     <!-- ===== Text ===== -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#A8A8AF</color>
-    <color name="text_tertiary">#6E6E77</color>
+    <color name="text_primary">#F5F5E9</color>
+    <color name="text_secondary">#B8BCA4</color>
+    <color name="text_tertiary">#7F866C</color>
 
-    <!-- ===== Primary accent: green ===== -->
-    <color name="accent">#1ED760</color>
-    <color name="accent_light">#3BE87A</color>
-    <color name="accent_dark">#12A34A</color>
-    <color name="accent_dim">#17281D</color>
-    <color name="accent_on">#04140A</color>
+    <!-- ===== Theme 1: Emerald (Default Spotify) ===== -->
+    <color name="emerald_accent">#C8F34B</color>
+    <color name="emerald_light">#D8FF69</color>
+    <color name="emerald_dark">#9FC630</color>
+    <color name="emerald_dim">#303A1A</color>
+    <color name="emerald_on">#1B2010</color>
 
-    <!-- ===== Secondary accents (used for stat variety) ===== -->
+    <!-- ===== Theme 2: Cyberpunk Neon ===== -->
+    <color name="cyber_accent">#B026FF</color>
+    <color name="cyber_light">#E056FF</color>
+    <color name="cyber_dark">#7900C2</color>
+    <color name="cyber_dim">#2A0A3D</color>
+    <color name="cyber_pink">#FF2E93</color>
+
+    <!-- ===== Theme 3: Sunset Amber ===== -->
+    <color name="sunset_accent">#FF7A00</color>
+    <color name="sunset_light">#FFA043</color>
+    <color name="sunset_dark">#CC5200</color>
+    <color name="sunset_dim">#3B1A00</color>
+    <color name="sunset_coral">#FF3D57</color>
+
+    <!-- ===== Theme 4: Oceanic Cyan ===== -->
+    <color name="cyan_accent">#00F2FE</color>
+    <color name="cyan_light">#00D4FF</color>
+    <color name="cyan_dark">#0099B8</color>
+    <color name="cyan_dim">#002C38</color>
+    <color name="cyan_blue">#4FACFE</color>
+
+    <!-- ===== Theme 5: AMOLED Midnight ===== -->
+    <color name="amoled_bg">#000000</color>
+    <color name="amoled_surface">#0D0D0E</color>
+    <color name="amoled_accent">#7C4DFF</color>
+    <color name="amoled_light">#B388FF</color>
+    <color name="amoled_dark">#536DFE</color>
+    <color name="amoled_dim">#1D153B</color>
+
+    <!-- ===== Default Accent maps to Emerald ===== -->
+    <color name="accent">#C8F34B</color>
+    <color name="accent_light">#D8FF69</color>
+    <color name="accent_dark">#9FC630</color>
+    <color name="accent_dim">#303A1A</color>
+    <color name="accent_on">#1B2010</color>
+
+    <!-- ===== Secondary accents ===== -->
     <color name="violet">#A78BFA</color>
     <color name="violet_light">#C4B1FF</color>
     <color name="violet_dim">#241E38</color>
-
     <color name="amber">#FBBF24</color>
     <color name="amber_dim">#332A12</color>
-
     <color name="green">#34E4A0</color>
 
-    <!-- ===== Heatmap scale (dim → bright, matches accent) ===== -->
+    <!-- ===== Heatmap scale ===== -->
     <color name="heatmap_0">#1B1B1F</color>
     <color name="heatmap_1">#163A26</color>
     <color name="heatmap_2">#1F6B41</color>
@@ -42,10 +76,11 @@
     <!-- ===== Status ===== -->
     <color name="red">#FF6B6B</color>
     <color name="red_dim">#33191A</color>
+    <color name="heart_active">#FF3B30</color>
 
     <!-- ===== Nav ===== -->
-    <color name="nav_active">#1ED760</color>
-    <color name="nav_inactive">#6E6E77</color>
+    <color name="nav_active">#C8F34B</color>
+    <color name="nav_inactive">#8A9076</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

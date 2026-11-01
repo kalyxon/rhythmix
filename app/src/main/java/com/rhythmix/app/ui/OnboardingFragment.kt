@@ -21,6 +21,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        UiMotion.enter(binding.root)
         (requireActivity() as MainActivity).also { main ->
             binding.btnPickFolder.setOnClickListener { main.folderPickerLauncher.launch(null) }
         }

@@ -13,13 +13,12 @@
         android:layout_height="104dp"
         android:background="@drawable/bg_card_accent"
         android:layout_marginBottom="36dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_gravity="center"
-            android:text="♪"
-            android:textSize="52sp"
-            android:textColor="@color/accent_on" />
+            android:contentDescription="@string/song_artwork"
+            android:src="@drawable/ic_artwork_default" />
     </FrameLayout>
 
     <TextView

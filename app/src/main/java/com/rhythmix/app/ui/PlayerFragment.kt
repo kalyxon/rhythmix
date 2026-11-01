@@ -1,13 +1,14 @@
 package com.rhythmix.app.ui
 
 import android.animation.ValueAnimator
-import android.graphics.Color
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.Player
@@ -21,21 +22,8 @@ class PlayerFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
     private var isSeeking = false
-    private var pulseAnim: ValueAnimator? = null
-
-    // Track last rendered song id — detect actual song changes
+    private var artworkRotation: ValueAnimator? = null
     private var lastRenderedSongId: String? = null
-
-    private val artPalette = listOf(
-        intArrayOf(0xC8, 0xFF, 0x00),
-        intArrayOf(0x9B, 0x6D, 0xFF),
-        intArrayOf(0xFF, 0x4D, 0x8F),
-        intArrayOf(0x00, 0xD4, 0xFF),
-        intArrayOf(0xFF, 0x8C, 0x42),
-        intArrayOf(0x1D, 0xB9, 0x54),
-        intArrayOf(0xFF, 0xB8, 0x30),
-        intArrayOf(0xFF, 0x44, 0x44),
-    )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPlayerBinding.inflate(inflater, container, false)
@@ -44,6 +32,7 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        UiMotion.enter(binding.root)
 
         val pc = viewModel.playerController
 
@@ -54,23 +43,54 @@ class PlayerFragment : Fragment() {
         binding.btnShuffle.setOnClickListener { pc.toggleShuffle() }
         binding.btnRepeat.setOnClickListener { pc.cycleRepeat() }
         binding.btnQueue.setOnClickListener { viewModel.navigate(AppScreen.Library) }
+        binding.artContainer.setOnClickListener {
+            viewModel.playerState.value?.currentSong?.let { song ->
+                (activity as? MainActivity)?.chooseArtwork(song)
+            }
+        }
+        binding.artContainer.contentDescription = "Change song artwork"
 
-        binding.seekBar.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(sb: android.widget.SeekBar?, p: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    val dur = viewModel.playerState.value?.durationMs ?: 0L
-                    binding.tvPosition.text = fmtMs((p / 1000f * dur).toLong())
+        // Favorites Heart Button
+        binding.btnLike.setOnClickListener {
+            val song = viewModel.playerState.value?.currentSong ?: return@setOnClickListener
+            viewModel.toggleFavorite(song.id)
+            updateFavoriteUI(song.id)
+        }
+
+        // Sleep Timer Dialog
+        binding.btnSleep.setOnClickListener {
+            val options = arrayOf("Off", "15 minutes", "30 minutes", "45 minutes", "60 minutes")
+            val minutes = intArrayOf(0, 15, 30, 45, 60)
+            AlertDialog.Builder(requireContext())
+                .setTitle("Sleep Timer")
+                .setItems(options) { _, which ->
+                    pc.setSleepTimer(minutes[which])
                 }
-            }
-            override fun onStartTrackingTouch(sb: android.widget.SeekBar?) { isSeeking = true }
-            override fun onStopTrackingTouch(sb: android.widget.SeekBar?) {
-                isSeeking = false
-                val dur = viewModel.playerState.value?.durationMs ?: 0L
-                pc.seekTo(((sb?.progress ?: 0) / 1000f * dur).toLong())
-            }
-        })
+                .show()
+        }
+
+        binding.progressOrbit.onSeekStarted = { isSeeking = true }
+        binding.progressOrbit.onSeekProgressChanged = { progress ->
+            val duration = viewModel.playerState.value?.durationMs ?: 0L
+            val position = (progress * duration).toLong()
+            binding.progressOrbit.positionLabel = fmtMs(position)
+            binding.progressOrbit.remainingLabel = "-${fmtMs((duration - position).coerceAtLeast(0L))}"
+        }
+        binding.progressOrbit.onSeekFinished = { progress ->
+            isSeeking = false
+            val duration = viewModel.playerState.value?.durationMs ?: 0L
+            pc.seekTo((progress * duration).toLong())
+        }
+        binding.progressOrbit.onSeekCancelled = { isSeeking = false }
 
         val gest = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent): Boolean = true
+
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                binding.artContainer.performClick()
+                return true
+            }
+
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, vx: Float, vy: Float): Boolean {
                 val dx = e2.x - (e1?.x ?: e2.x)
                 if (abs(dx) > 100 && abs(vx) > abs(vy)) {
@@ -85,37 +105,31 @@ class PlayerFragment : Fragment() {
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             val song = state.currentSong
 
-            // ── Text: always update ───────────────────────────────────────────
-            binding.tvTitle.text  = song?.title  ?: "—"
+            binding.tvTitle.text = song?.title ?: "—"
             binding.tvArtist.text = song?.artist ?: "—"
+            binding.tvAlbum.text = song?.album.orEmpty()
 
-            // ── Album art: update whenever song ID changes ────────────────────
-            // BUG FIX: don't gate art update on pulse running state.
-            // Always call updateArt() when the song changes, regardless of
-            // whether we're already playing/animating.
-            if (song != null && song.id != lastRenderedSongId) {
-                lastRenderedSongId = song.id
-                updateArt(song.id, song.title)
-                // Reset and restart pulse if playing, so it starts fresh for new song
-                if (state.isPlaying) {
-                    restartPulse()
+            if (song != null) {
+                updateFavoriteUI(song.id)
+                if (song.id != lastRenderedSongId) {
+                    lastRenderedSongId = song.id
+                    updateArt(song)
                 }
             }
 
-            // ── Play button icon ──────────────────────────────────────────────
             binding.btnPlay.setImageResource(
                 if (state.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
             )
 
-            // ── Pulse: manage based on play state ─────────────────────────────
-            // Only start/stop pulse — don't let this block art updates
+            // Equalizer animation
+            binding.equalizerView.isPlaying = state.isPlaying
+
             if (state.isPlaying) {
-                if (pulseAnim?.isRunning != true) startPulse()
+                if (artworkRotation?.isRunning != true) startArtworkRotation()
             } else {
-                stopPulse()
+                stopArtworkRotation()
             }
 
-            // ── Shuffle / repeat ──────────────────────────────────────────────
             binding.btnShuffle.alpha = if (state.shuffleOn) 1f else 0.3f
             binding.btnRepeat.setImageResource(
                 if (state.repeatMode == Player.REPEAT_MODE_ONE) R.drawable.ic_repeat_one
@@ -123,49 +137,58 @@ class PlayerFragment : Fragment() {
             )
             binding.btnRepeat.alpha = if (state.repeatMode != Player.REPEAT_MODE_OFF) 1f else 0.3f
 
-            // ── Seek bar ──────────────────────────────────────────────────────
-            if (!isSeeking && state.durationMs > 0) {
-                binding.seekBar.progress = (state.positionMs * 1000 / state.durationMs).toInt()
+            if (!isSeeking) {
+                binding.progressOrbit.progress =
+                    if (state.durationMs > 0) state.positionMs.toFloat() / state.durationMs else 0f
+                binding.progressOrbit.positionLabel = fmtMs(state.positionMs)
+                binding.progressOrbit.remainingLabel =
+                    "-${fmtMs((state.durationMs - state.positionMs).coerceAtLeast(0L))}"
             }
-            binding.tvPosition.text = fmtMs(state.positionMs)
-            binding.tvDuration.text = fmtMs(state.durationMs)
+        }
+
+        viewModel.analytics.observe(viewLifecycleOwner) {
+            viewModel.playerState.value?.currentSong?.let { song ->
+                updateFavoriteUI(song.id)
+            }
+        }
+
+        viewModel.artworkUpdated.observe(viewLifecycleOwner) { songId ->
+            val song = viewModel.playerState.value?.currentSong
+                ?.takeIf { it.id == songId } ?: return@observe
+            updateArt(song)
         }
     }
 
-    private fun updateArt(songId: String, title: String) {
-        var hash = 0
-        for (c in songId) hash = (hash * 31 + c.code) or 0
-        val rgb = artPalette[Math.abs(hash) % artPalette.size]
-        val bg  = Color.rgb(rgb[0] / 4, rgb[1] / 4, rgb[2] / 4)
-        binding.artContainer.setBackgroundColor(bg)
-        binding.tvArtLetter.text = title.firstOrNull()?.uppercase() ?: "♪"
-        binding.tvArtLetter.setTextColor(Color.argb(80, rgb[0], rgb[1], rgb[2]))
-        binding.tvArtNote.visibility = View.GONE
+    private fun updateFavoriteUI(songId: String) {
+        val isFav = viewModel.isFavorite(songId)
+        if (isFav) {
+            binding.btnLike.setColorFilter(requireContext().getColor(R.color.heart_active))
+            binding.btnLike.alpha = 1.0f
+        } else {
+            binding.btnLike.setColorFilter(requireContext().getColor(R.color.text_tertiary))
+            binding.btnLike.alpha = 0.6f
+        }
     }
 
-    private fun startPulse() {
-        pulseAnim = ValueAnimator.ofFloat(1f, 1.04f, 1f).apply {
-            duration = 800
+    private fun updateArt(song: com.rhythmix.app.model.Song) {
+        ArtworkLoader.load(song, binding.ivPlayerArt)
+    }
+
+    private fun startArtworkRotation() {
+        if (UiMotion.isReduced(requireContext())) return
+        val artwork = binding.ivPlayerArt
+        artworkRotation = ValueAnimator.ofFloat(artwork.rotation, artwork.rotation + 360f).apply {
+            duration = 24_000
             repeatCount = ValueAnimator.INFINITE
-            addUpdateListener { a ->
-                val s = a.animatedValue as Float
-                binding.artContainer.scaleX = s
-                binding.artContainer.scaleY = s
-            }
+            interpolator = LinearInterpolator()
+            addUpdateListener { artwork.rotation = it.animatedValue as Float }
             start()
         }
     }
 
-    private fun restartPulse() {
-        pulseAnim?.cancel()
-        startPulse()
-    }
-
-    private fun stopPulse() {
-        pulseAnim?.cancel()
-        pulseAnim = null
-        binding.artContainer.scaleX = 1f
-        binding.artContainer.scaleY = 1f
+    private fun stopArtworkRotation() {
+        artworkRotation?.cancel()
+        artworkRotation = null
     }
 
     private fun fmtMs(ms: Long): String {
@@ -174,7 +197,8 @@ class PlayerFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        pulseAnim?.cancel()
+        artworkRotation?.cancel()
+        lastRenderedSongId = null
         super.onDestroyView()
         _binding = null
     }

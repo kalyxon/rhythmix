@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_shell"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:text="♪"
             android:textSize="220sp"
-            android:textColor="#0F1ED760"
+            android:textColor="#18C8F34B"
             android:layout_gravity="center"
             android:rotation="-15" />
 
@@ -38,13 +39,12 @@
                 android:layout_height="128dp"
                 android:background="@drawable/bg_card_accent"
                 android:layout_marginBottom="32dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
                     android:layout_gravity="center"
-                    android:text="♪"
-                    android:textSize="60sp"
-                    android:textColor="@color/accent_on" />
+                    android:contentDescription="@string/song_artwork"
+                    android:src="@drawable/ic_artwork_default" />
             </FrameLayout>
 
             <TextView
@@ -82,8 +82,10 @@
             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="20dp">
             <FrameLayout android:layout_width="42dp" android:layout_height="42dp"
                 android:background="@drawable/bg_card_accent" android:layout_marginEnd="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center" android:text="🎵" android:textSize="18sp"/>
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:layout_gravity="center" android:src="@drawable/ic_music_note"
+                    android:contentDescription="@string/music_formats"
+                    app:tint="@color/accent_on" />
             </FrameLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -98,8 +100,10 @@
             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="20dp">
             <FrameLayout android:layout_width="42dp" android:layout_height="42dp"
                 android:background="@drawable/bg_card_violet" android:layout_marginEnd="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center" android:text="📊" android:textSize="18sp"/>
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:layout_gravity="center" android:src="@drawable/ic_analytics"
+                    android:contentDescription="@string/private_analytics"
+                    app:tint="@color/text_primary" />
             </FrameLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -114,8 +118,10 @@
             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="32dp">
             <FrameLayout android:layout_width="42dp" android:layout_height="42dp"
                 android:background="@drawable/bg_card2" android:layout_marginEnd="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center" android:text="🔒" android:textSize="18sp"/>
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:layout_gravity="center" android:src="@drawable/ic_shield"
+                    android:contentDescription="@string/offline_privacy"
+                    app:tint="@color/text_primary" />
             </FrameLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"

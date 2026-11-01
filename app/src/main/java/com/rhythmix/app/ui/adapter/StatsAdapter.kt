@@ -11,7 +11,9 @@ import com.rhythmix.app.R
 import com.rhythmix.app.model.SongStats
 import java.util.concurrent.TimeUnit
 
-class StatsAdapter : ListAdapter<SongStats, StatsAdapter.VH>(DIFF) {
+class StatsAdapter(
+    private val onSongClick: (SongStats) -> Unit = {}
+) : ListAdapter<SongStats, StatsAdapter.VH>(DIFF) {
 
     companion object {
         val DIFF = object : DiffUtil.ItemCallback<SongStats>() {
@@ -42,5 +44,9 @@ class StatsAdapter : ListAdapter<SongStats, StatsAdapter.VH>(DIFF) {
         val hrs = TimeUnit.MILLISECONDS.toHours(s.totalListenedMs)
         val min = TimeUnit.MILLISECONDS.toMinutes(s.totalListenedMs) % 60
         h.listened.text = if (hrs > 0) "${hrs}h ${min}m" else "${min}m"
+        h.itemView.setOnClickListener {
+            val safePos = h.bindingAdapterPosition
+            if (safePos != RecyclerView.NO_POSITION) onSongClick(getItem(safePos))
+        }
     }
 }

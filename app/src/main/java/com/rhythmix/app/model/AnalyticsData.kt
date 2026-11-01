@@ -18,7 +18,9 @@ data class PlayEvent(
 data class AnalyticsData(
     val schemaVersion: Int = 1,
     val lastSyncAt: Long = System.currentTimeMillis(),
-    val playEvents: List<PlayEvent> = emptyList()
+    val playEvents: List<PlayEvent> = emptyList(),
+    val albums: List<Album> = emptyList(),
+    val favoriteSongIds: List<String> = emptyList()
 )
 
 /** Lightweight summary used by the dashboard/analytics UI */

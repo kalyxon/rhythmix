@@ -1,12 +1,14 @@
 package com.rhythmix.app.ui
 
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.rhythmix.app.model.Album
 import com.rhythmix.app.model.AnalyticsData
 import com.rhythmix.app.model.PlayEvent
 import com.rhythmix.app.model.Song
@@ -23,6 +25,9 @@ sealed class AppScreen {
     object Scanning   : AppScreen()
     object Home       : AppScreen()
     object Library    : AppScreen()
+    object Albums     : AppScreen()
+    data class AlbumDetail(val albumId: String) : AppScreen()
+    data class SongDetail(val songId: String) : AppScreen()
     object Analytics  : AppScreen()
     object Player     : AppScreen()
     object Settings   : AppScreen()
@@ -32,19 +37,30 @@ data class ScanProgress(val scanned: Int, val total: Int)
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
-    companion object { private const val TAG = "MainViewModel" }
+    companion object {
+        private const val TAG = "MainViewModel"
+        private const val PREF_THEME = "current_theme_id"
+        private const val PREF_REDUCE_MOTION = "reduce_motion"
+    }
 
     val storage = StorageManager(app)
     val playerController = PlayerController(app)
+    private val prefs = app.getSharedPreferences("rhythmix_prefs", Context.MODE_PRIVATE)
 
-    private val _screen       = MutableLiveData<AppScreen>(AppScreen.Onboarding)
+    private val _screen = MutableLiveData<AppScreen>(AppScreen.Onboarding)
     val screen: LiveData<AppScreen> = _screen
 
-    private val _songs        = MutableLiveData<List<Song>>(emptyList())
+    private val _songs = MutableLiveData<List<Song>>(emptyList())
     val songs: LiveData<List<Song>> = _songs
 
-    private val _analytics    = MutableLiveData(AnalyticsData())
+    private val _analytics = MutableLiveData(AnalyticsData())
     val analytics: LiveData<AnalyticsData> = _analytics
+
+    private val _themeId = MutableLiveData(prefs.getString(PREF_THEME, "emerald") ?: "emerald")
+    val themeId: LiveData<String> = _themeId
+
+    private val _reduceMotion = MutableLiveData(prefs.getBoolean(PREF_REDUCE_MOTION, false))
+    val reduceMotion: LiveData<Boolean> = _reduceMotion
 
     private val _scanProgress = MutableLiveData<ScanProgress?>()
     val scanProgress: LiveData<ScanProgress?> = _scanProgress
@@ -52,7 +68,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val _toastMessage = MutableLiveData<String?>()
     val toastMessage: LiveData<String?> = _toastMessage
 
-    private val _sortMode     = MutableLiveData("title")
+    private val _artworkUpdated = MutableLiveData<String?>()
+    val artworkUpdated: LiveData<String?> = _artworkUpdated
+
+    private val _sortMode = MutableLiveData("title")
     val sortMode: LiveData<String> = _sortMode
 
     val playerState: LiveData<PlayerState> = playerController.state
@@ -64,20 +83,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         if (storage.hasSavedFolder() && storage.isFolderPermissionValid()) {
             viewModelScope.launch {
                 val uri = storage.getSavedFolderUri()!!
-                // Load analytics first (fast)
                 loadAnalyticsFromFolder(uri)
 
-                // Try song cache first — avoids rescanning every launch
-                val cached: List<Song> = withContext(Dispatchers.IO) {
-                    storage.loadSongsFromCache().orEmpty()
+                val cached = withContext(Dispatchers.IO) {
+                    storage.loadSongsFromCache()
                 }
-                if (cached.isNotEmpty()) {
+                if (cached != null) {
                     Log.i(TAG, "Restored ${cached.size} songs from cache")
                     _songs.postValue(cached)
                     playerController.setQueue(cached, 0)
                     _screen.postValue(AppScreen.Home)
                 } else {
-                    // No cache — full scan
                     scanFolderInternal(uri)
                 }
             }
@@ -89,6 +105,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         playerController.disconnect()
     }
 
+    fun setTheme(theme: String) {
+        prefs.edit().putString(PREF_THEME, theme).apply()
+        _themeId.postValue(theme)
+    }
+
+    fun setReduceMotion(enabled: Boolean) {
+        prefs.edit().putBoolean(PREF_REDUCE_MOTION, enabled).apply()
+        _reduceMotion.value = enabled
+    }
+
     fun onFolderSelected(uri: Uri) {
         storage.saveFolderUri(uri)
         viewModelScope.launch {
@@ -97,18 +123,33 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun saveSongArtwork(songId: String, imageUri: Uri) {
+        viewModelScope.launch {
+            try {
+                storage.saveSongArtwork(songId, imageUri)
+                ArtworkLoader.clear(songId)
+                _artworkUpdated.value = songId
+                _toastMessage.value = "Artwork saved offline in your music folder."
+            } catch (error: Exception) {
+                Log.e(TAG, "Unable to save artwork for song $songId", error)
+                _toastMessage.value = error.message ?: "Unable to save that image."
+            }
+        }
+    }
+
     private suspend fun scanFolderInternal(folderUri: Uri) {
         _screen.postValue(AppScreen.Scanning)
-        val scanned = storage.scanSongs(folderUri) { done, total ->
+        val discoveredSongs = storage.scanSongs(folderUri) { done, total ->
             _scanProgress.postValue(ScanProgress(done, total))
         }
         _scanProgress.postValue(null)
-        if (scanned.isEmpty()) {
+        if (discoveredSongs.isEmpty()) {
             _toastMessage.postValue("No audio files found in this folder.")
             _screen.postValue(AppScreen.Onboarding)
             return
         }
-        storage.saveSongsToCache(scanned)  // cache so next launch is instant
+        val scanned = storage.filterRemovedSongs(discoveredSongs)
+        storage.saveSongsToCache(scanned)
         _songs.postValue(scanned)
         playerController.setQueue(scanned, 0)
         _screen.postValue(AppScreen.Home)
@@ -133,6 +174,249 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // ── Favorites ─────────────────────────────────────────────────────────────
+
+    fun isFavorite(songId: String): Boolean {
+        return _analytics.value?.favoriteSongIds?.contains(songId) == true
+    }
+
+    fun toggleFavorite(songId: String) {
+        val current = _analytics.value ?: AnalyticsData()
+        val list = current.favoriteSongIds.toMutableList()
+        val isFavNow = if (list.contains(songId)) {
+            list.remove(songId)
+            false
+        } else {
+            list.add(songId)
+            true
+        }
+        val updated = current.copy(favoriteSongIds = list)
+        _analytics.postValue(updated)
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
+        }
+        _toastMessage.postValue(if (isFavNow) "Added to Favorites ♥" else "Removed from Favorites")
+    }
+
+    // ── Album Management ──────────────────────────────────────────────────────
+
+    fun createAlbum(
+        title: String,
+        description: String,
+        songIds: List<String>,
+        collageStyle: String = "grid2x2",
+        coverUri: String? = null
+    ) {
+        if (title.isBlank()) {
+            _toastMessage.postValue("Please enter an album title.")
+            return
+        }
+        if (songIds.isEmpty()) {
+            _toastMessage.postValue("Please select at least 1 song for the album.")
+            return
+        }
+
+        val newAlbum = Album(
+            id = "album_" + System.currentTimeMillis(),
+            title = title.trim(),
+            description = description.trim(),
+            category = "Custom",
+            songIds = songIds,
+            collageStyle = collageStyle,
+            createdAt = System.currentTimeMillis(),
+            coverUri = coverUri
+        )
+
+        val current = _analytics.value ?: AnalyticsData()
+        val updated = current.copy(albums = current.albums + newAlbum)
+        _analytics.postValue(updated)
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
+        }
+        _toastMessage.postValue("Album '$title' created!")
+    }
+
+    fun deleteAlbum(albumId: String) {
+        val current = _analytics.value ?: AnalyticsData()
+        val updated = current.copy(albums = current.albums.filter { it.id != albumId })
+        _analytics.postValue(updated)
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
+        }
+        _toastMessage.postValue("Album deleted.")
+        if (_screen.value is AppScreen.AlbumDetail) {
+            navigate(AppScreen.Albums)
+        }
+    }
+
+    fun updateAlbum(
+        albumId: String,
+        title: String,
+        description: String,
+        songIds: List<String>,
+        collageStyle: String,
+        coverUri: String?
+    ) {
+        if (title.isBlank()) {
+            _toastMessage.postValue("Please enter an album title.")
+            return
+        }
+        if (songIds.isEmpty()) {
+            _toastMessage.postValue("Please select at least 1 song for the album.")
+            return
+        }
+
+        val current = _analytics.value ?: AnalyticsData()
+        val existing = current.albums.find { it.id == albumId } ?: return
+        val updatedAlbum = existing.copy(
+            title = title.trim(),
+            description = description.trim(),
+            songIds = songIds.distinct(),
+            collageStyle = collageStyle,
+            coverUri = coverUri
+        )
+        val updated = current.copy(albums = current.albums.map {
+            if (it.id == albumId) updatedAlbum else it
+        })
+        _analytics.postValue(updated)
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
+        }
+        _toastMessage.postValue("Album '${updatedAlbum.title}' updated.")
+    }
+
+    fun updateSongMetadata(songId: String, title: String, artist: String, album: String) {
+        val existing = _songs.value.orEmpty().find { it.id == songId } ?: return
+        if (title.isBlank() || artist.isBlank()) {
+            _toastMessage.postValue("Song title and artist can't be empty.")
+            return
+        }
+        val updatedSong = existing.copy(
+            title = title.trim(),
+            artist = artist.trim(),
+            album = album.trim().ifBlank { "Unknown Album" }
+        )
+        storage.saveSongMetadata(updatedSong)
+        val updatedSongs = _songs.value.orEmpty().map {
+            if (it.id == songId) updatedSong else it
+        }
+        _songs.value = updatedSongs
+        storage.saveSongsToCache(updatedSongs)
+        playerController.updateSongDetails(updatedSong)
+        _toastMessage.postValue("Song details updated.")
+    }
+
+    fun removeSongFromLibrary(songId: String) {
+        val updatedSongs = _songs.value.orEmpty().filterNot { it.id == songId }
+        if (updatedSongs.size == _songs.value.orEmpty().size) return
+
+        storage.removeSongFromLibrary(songId)
+        storage.saveSongsToCache(updatedSongs)
+        _songs.value = updatedSongs
+        playerController.removeSongFromQueue(songId)
+        val current = _analytics.value ?: AnalyticsData()
+        val updatedAnalytics = current.copy(
+            favoriteSongIds = current.favoriteSongIds.filterNot { it == songId },
+            albums = current.albums.map { album ->
+                album.copy(songIds = album.songIds.filterNot { it == songId })
+            }
+        )
+        _analytics.value = updatedAnalytics
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updatedAnalytics) }
+        }
+        _toastMessage.postValue("Song removed from your library. The audio file was not deleted.")
+        if (_screen.value is AppScreen.SongDetail) navigate(AppScreen.Library)
+    }
+
+    fun getSongPlayCount(songId: String): Int =
+        _analytics.value?.playEvents?.count { it.songId == songId } ?: 0
+
+    fun getSmartCategoryAlbums(): List<Album> {
+        val allSongs = _songs.value ?: emptyList()
+        val favIds = _analytics.value?.favoriteSongIds ?: emptyList()
+        val topStats = computeSongStats(10)
+
+        if (allSongs.isEmpty()) return emptyList()
+
+        val result = mutableListOf<Album>()
+
+        // 1. Favorites / Liked Songs
+        val favSongs = favIds
+        result.add(Album(
+            id = "smart_favs",
+            title = if (favIds.isNotEmpty()) "Liked Songs" else "Favorites",
+            description = if (favIds.isNotEmpty()) "${favIds.size} liked tracks" else "Like a song to save it here",
+            category = "Favorites",
+            songIds = favSongs,
+            collageStyle = "grid2x2",
+            colorHex = "#FF3B30"
+        ))
+
+        // 2. Full Library Collection
+        result.add(Album(
+            id = "smart_all",
+            title = "Library Collection",
+            description = "${allSongs.size} tracks across your music folder",
+            category = "Full Library",
+            songIds = allSongs.map { it.id },
+            collageStyle = "grid2x2",
+            colorHex = "#C8F34B"
+        ))
+
+        // 3. Recently Discovered / Added
+        val recents = allSongs.sortedByDescending { it.addedAt }.take(8).map { it.id }
+        result.add(Album(
+            id = "smart_recent",
+            title = "Recently Discovered",
+            description = "Latest additions to your library",
+            category = "Recently Added",
+            songIds = recents,
+            collageStyle = "gradient",
+            colorHex = "#00D4FF"
+        ))
+
+        // 4. Heavy Rotation / Top Played Collage
+        val topIds = if (topStats.isNotEmpty()) topStats.map { it.songId } else allSongs.take(8).map { it.id }
+        result.add(Album(
+            id = "smart_top",
+            title = "Heavy Rotation",
+            description = if (topStats.isNotEmpty()) "Your top played tracks" else "Featured music mix",
+            category = "Top Played",
+            songIds = topIds,
+            collageStyle = "grid2x2",
+            colorHex = "#B026FF"
+        ))
+
+        // 5. Group by Artists (Category Albums)
+        val artistGroups = allSongs
+            .filter { it.artist.isNotBlank() && !it.artist.equals("Unknown Artist", ignoreCase = true) }
+            .groupBy { it.artist.trim().lowercase() }
+            .filterValues { it.size > 1 }
+            .toSortedMap()
+        artistGroups.entries.take(4).forEach { (artistKey, songs) ->
+            val artistName = songs.first().artist.trim()
+            val artistId = storage.stableHash(artistKey)
+            result.add(Album(
+                id = "smart_artist_$artistId",
+                title = "$artistName Mix",
+                description = "${songs.size} tracks by $artistName",
+                category = "Artist Spotlight",
+                songIds = songs.map { it.id },
+                collageStyle = "grid2x2",
+                colorHex = "#FF7A00"
+            ))
+        }
+
+        return result
+    }
+
+    fun getAlbumById(id: String): Album? {
+        val smart = getSmartCategoryAlbums().find { it.id == id }
+        if (smart != null) return smart
+        return _analytics.value?.albums?.find { it.id == id }
+    }
+
     fun clearAnalytics() {
         val cleared = AnalyticsData()
         _analytics.postValue(cleared)
@@ -142,10 +426,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         _toastMessage.postValue("Listening history cleared.")
     }
 
-    // ── Stats helpers (called by fragments, reactive via analytics LiveData) ──
+    // ── Stats helpers ─────────────────────────────────────────────────────────
 
-    fun computeSongStats(limit: Int = 10): List<SongStats> {
-        val events  = _analytics.value?.playEvents ?: return emptyList()
+    fun computeSongStats(limit: Int = 10, startedAfter: Long? = null): List<SongStats> {
+        val events = _analytics.value?.playEvents
+            ?.filter { startedAfter == null || it.startedAt >= startedAfter }
+            ?: return emptyList()
         val songMap = _songs.value?.associateBy { it.id } ?: return emptyList()
         return events.groupBy { it.songId }
             .mapNotNull { (id, evts) ->
@@ -159,12 +445,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             .take(limit)
     }
 
-    /**
-     * Returns total listening time across ALL saved play events.
-     * BUG FIX: also adds the currently-playing in-progress segment
-     * (the portion not yet flushed as a PlayEvent) so the counter
-     * updates live while a song is playing, not just after it ends.
-     */
     fun getTotalListeningTimeMs(): Long {
         val saved = _analytics.value?.playEvents?.sumOf { it.listenedMs } ?: 0L
         val live  = liveListeningMs()
@@ -182,41 +462,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val saved = _analytics.value?.playEvents
             ?.filter { it.startedAt >= startOfDay }
             ?.sumOf { it.listenedMs } ?: 0L
-        // Add live segment — it was started today if currently playing
         val live = liveListeningMs()
         return saved + live
     }
 
-    /**
-     * Returns ms listened in the current unflushed segment — directly from
-     * PlayerController's internal accumulatedMs + active session elapsed.
-     *
-     * WHY NOT positionMs: positionMs resets to 0 on every skip/next/prev, which
-     * caused the displayed total to DECREASE when skipping. accumulatedMs +
-     * sessionStartMs never decreases — it only resets when flushCurrent() emits
-     * a PlayEvent (at which point that ms is added to saved playEvents instead).
-     */
     private fun liveListeningMs(): Long = playerController.getLiveUnflushedMs()
-
-    fun getWeeklyListeningMs(): LongArray {
-        // Returns array[7] — index 0 = today, 1 = yesterday, ...
-        val result = LongArray(7)
-        val cal = java.util.Calendar.getInstance()
-        repeat(7) { dayOffset ->
-            cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
-            cal.set(java.util.Calendar.MINUTE, 0)
-            cal.set(java.util.Calendar.SECOND, 0)
-            cal.set(java.util.Calendar.MILLISECOND, 0)
-            val start = cal.timeInMillis
-            cal.add(java.util.Calendar.DAY_OF_YEAR, 1)
-            val end = cal.timeInMillis
-            result[dayOffset] = _analytics.value?.playEvents
-                ?.filter { it.startedAt in start until end }
-                ?.sumOf { it.listenedMs } ?: 0L
-            cal.add(java.util.Calendar.DAY_OF_YEAR, -2) // go back 2 to step back 1 net
-        }
-        return result
-    }
 
     fun navigate(screen: AppScreen) { _screen.postValue(screen) }
     fun setSortMode(mode: String)   { _sortMode.postValue(mode) }

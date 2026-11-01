@@ -27,7 +27,9 @@ data class PlayerState(
     val durationMs: Long = 0L,
     val shuffleOn: Boolean = false,
     val repeatMode: Int = Player.REPEAT_MODE_OFF,
-    val queueIndex: Int = 0
+    val queueIndex: Int = 0,
+    val sleepTimerMinutes: Int = 0,
+    val sleepTimerRemainingSec: Int = 0
 )
 
 class PlayerController(private val context: Context) {
@@ -39,6 +41,7 @@ class PlayerController(private val context: Context) {
 
     private val scope = CoroutineScope(Dispatchers.Main)
     private var progressJob: Job? = null
+    private var sleepTimerJob: Job? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
 
@@ -75,7 +78,6 @@ class PlayerController(private val context: Context) {
                 controller = c
                 attachListeners()
 
-                // FIX BUG 2: Sync UI state immediately on connection
                 _state.postValue(_state.value?.copy(
                     isPlaying = c.isPlaying,
                     shuffleOn = c.shuffleModeEnabled,
@@ -93,6 +95,7 @@ class PlayerController(private val context: Context) {
     fun disconnect() {
         flushCurrent(completed = false)
         progressJob?.cancel()
+        sleepTimerJob?.cancel()
         controllerFuture?.let { MediaController.releaseFuture(it) }
     }
 
@@ -109,14 +112,11 @@ class PlayerController(private val context: Context) {
                 val pos = c.currentPosition.coerceAtLeast(0)
                 val dur = c.duration.coerceAtLeast(0)
 
-                // FIX: Check if the mediaId from the controller matches the current song in our State
                 val actualMediaId = c.currentMediaItem?.mediaId
                 val isSongMismatch = actualMediaId != null && actualMediaId != cur.currentSong?.id
 
-                // Update UI if: position moved, play state changed, OR the song itself changed
                 if (cur.positionMs != pos || cur.isPlaying != c.isPlaying || isSongMismatch) {
 
-                    // If it's a song mismatch, find the real song to fix the UI
                     val updatedSong = if (isSongMismatch) {
                         songList.find { it.id == actualMediaId } ?: cur.currentSong
                     } else {
@@ -124,7 +124,7 @@ class PlayerController(private val context: Context) {
                     }
 
                     _state.postValue(cur.copy(
-                        currentSong = updatedSong, // Force update the song metadata
+                        currentSong = updatedSong,
                         positionMs = pos,
                         durationMs = if (dur > 0) dur else cur.durationMs,
                         isPlaying = c.isPlaying
@@ -134,15 +134,27 @@ class PlayerController(private val context: Context) {
         }
     }
 
-    private fun resetTracking() {
-        val now = System.currentTimeMillis()
-        trackingSong?.let {
-            // FIX BUG 4: Capture current progress before resetting
-            sessionStartMs?.let { start ->
-                accumulatedMs += (now - start)
+    // ── Sleep Timer ───────────────────────────────────────────────────────────
+
+    fun setSleepTimer(minutes: Int) {
+        sleepTimerJob?.cancel()
+        if (minutes <= 0) {
+            _state.postValue(_state.value?.copy(sleepTimerMinutes = 0, sleepTimerRemainingSec = 0))
+            return
+        }
+
+        var remaining = minutes * 60
+        _state.postValue(_state.value?.copy(sleepTimerMinutes = minutes, sleepTimerRemainingSec = remaining))
+
+        sleepTimerJob = scope.launch {
+            while (remaining > 0) {
+                delay(1000)
+                remaining--
+                _state.postValue(_state.value?.copy(sleepTimerRemainingSec = remaining))
             }
-            accumulatedMs = 0L
-            sessionStartMs = if (controller?.isPlaying == true) now else null
+            // Timer expired — pause playback
+            controller?.pause()
+            _state.postValue(_state.value?.copy(sleepTimerMinutes = 0, sleepTimerRemainingSec = 0))
         }
     }
 
@@ -165,24 +177,20 @@ class PlayerController(private val context: Context) {
                 _state.postValue(_state.value?.copy(isPlaying = playing))
             }
 
-            override fun onMediaItemTransition(item: MediaItem?, reason: Int) {val c = controller ?: return
+            override fun onMediaItemTransition(item: MediaItem?, reason: Int) {
+                val c = controller ?: return
 
-                // 1. Get the correct song
                 val resolvedSong = songList.find { it.id == item?.mediaId }
                     ?: songList.getOrNull(c.currentMediaItemIndex)
 
-                // 2. Clear old stats tracking immediately
                 flushCurrent(completed = reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
 
-                // 3. Update local index and song
                 currentIndex = c.currentMediaItemIndex
                 trackingSong = resolvedSong
 
-                // 4. Reset tracking timers for the NEW song right now
                 accumulatedMs = 0L
                 sessionStartMs = if (c.isPlaying) System.currentTimeMillis() else null
 
-                // 5. Force the UI update right now (don't wait for 250ms polling)
                 _state.postValue(_state.value?.copy(
                     currentSong = resolvedSong,
                     queueIndex  = currentIndex,
@@ -228,7 +236,7 @@ class PlayerController(private val context: Context) {
                 .build()
         }
         controller?.run {
-            shuffleModeEnabled = false // Reset shuffle when starting a new specific queue
+            shuffleModeEnabled = false
             setMediaItems(items, idx, 0L)
             prepare()
             play()
@@ -263,6 +271,69 @@ class PlayerController(private val context: Context) {
         controller?.run {
             setMediaItems(items, idx, 0L)
             prepare()
+        }
+    }
+
+    fun updateSongDetails(song: Song) {
+        songList = songList.map { if (it.id == song.id) song else it }
+        val index = songList.indexOfFirst { it.id == song.id }
+        if (index >= 0) {
+            val mediaItem = MediaItem.Builder()
+                .setUri(song.uri)
+                .setMediaId(song.id)
+                .setMediaMetadata(MediaMetadata.Builder().setTitle(song.title).setArtist(song.artist).build())
+                .build()
+            controller?.let { c ->
+                if (index < c.mediaItemCount && c.getMediaItemAt(index).mediaId == song.id) {
+                    c.replaceMediaItem(index, mediaItem)
+                }
+            }
+        }
+        val current = _state.value ?: return
+        if (current.currentSong?.id == song.id) {
+            _state.postValue(current.copy(currentSong = song))
+        }
+    }
+
+    fun removeSongFromQueue(songId: String) {
+        val removedIndex = songList.indexOfFirst { it.id == songId }
+        if (removedIndex < 0) return
+
+        val previousState = _state.value ?: PlayerState()
+        val wasCurrent = previousState.currentSong?.id == songId
+        if (wasCurrent) flushCurrent(completed = false)
+        songList = songList.filterNot { it.id == songId }
+
+        if (songList.isEmpty()) {
+            controller?.clearMediaItems()
+            currentIndex = 0
+            trackingSong = null
+            _state.postValue(PlayerState())
+            return
+        }
+
+        if (removedIndex < currentIndex) currentIndex--
+        if (wasCurrent) currentIndex = removedIndex.coerceAtMost(songList.lastIndex)
+        controller?.let { c ->
+            if (removedIndex < c.mediaItemCount && c.getMediaItemAt(removedIndex).mediaId == songId) {
+                c.removeMediaItem(removedIndex)
+            }
+        }
+
+        if (wasCurrent) {
+            val nextSong = songList[currentIndex]
+            trackingSong = nextSong
+            accumulatedMs = 0L
+            sessionStartMs = if (controller?.isPlaying == true) System.currentTimeMillis() else null
+            _state.postValue(previousState.copy(
+                currentSong = nextSong,
+                queueIndex = currentIndex,
+                positionMs = 0L,
+                durationMs = nextSong.durationMs,
+                isPlaying = controller?.isPlaying ?: false
+            ))
+        } else {
+            _state.postValue(previousState.copy(queueIndex = currentIndex))
         }
     }
 

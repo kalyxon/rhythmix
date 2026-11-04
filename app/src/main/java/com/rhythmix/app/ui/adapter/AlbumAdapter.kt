@@ -69,7 +69,6 @@ class AlbumAdapter(
                 onAlbumClick(getItem(safePos))
             }
         }
-
         if (!holder.hasAnimatedIn) {
             holder.hasAnimatedIn = true
             if (UiMotion.isReduced(holder.itemView.context)) return

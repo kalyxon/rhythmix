@@ -1,5 +1,6 @@
 package com.rhythmix.app.ui
 
+import android.animation.ValueAnimator
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -36,8 +37,11 @@ class AnalyticsFragment : Fragment() {
     private val DAYS      = 7
     // Day-label column width in dp
     private val DAY_COL_DP = 16
-    private var selectedPeriod = "all"
+    private var selectedPeriod = "week"
     private var latestEvents: List<PlayEvent> = emptyList()
+    private var totalListeningAnimator: ValueAnimator? = null
+    private var displayedTotalListeningMinutes: Int? = null
+    private var lastTotalListeningTargetMinutes: Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAnalyticsBinding.inflate(inflater, container, false)
@@ -65,16 +69,17 @@ class AnalyticsFragment : Fragment() {
         UiMotion.animateList(binding.rvTopSongs)
 
         listOf(
-            binding.chipPeriodAll to "all",
-            binding.chipPeriodYear to "year",
-            binding.chipPeriodMonth to "month",
-            binding.chipPeriodWeek to "week"
+            binding.periodWeek to "week",
+            binding.periodMonth to "month",
+            binding.periodYear to "year"
         ).forEach { (chip, period) ->
             chip.setOnClickListener {
                 selectedPeriod = period
+                updatePeriodControl()
                 refreshDashboard(adapter, latestEvents)
             }
         }
+        updatePeriodControl()
 
         viewModel.analytics.observe(viewLifecycleOwner) { data ->
             latestEvents = data.playEvents
@@ -83,11 +88,14 @@ class AnalyticsFragment : Fragment() {
         viewModel.songs.observe(viewLifecycleOwner) {
             refreshDashboard(adapter, latestEvents)
         }
+        viewModel.reduceMotion.observe(viewLifecycleOwner) { enabled ->
+            binding.listeningRing.setMotionEnabled(!enabled)
+        }
         // Update both time counters live while a song is playing (positionMs ticks every 200ms)
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             if (state.isPlaying) {
                 binding.tvTodayListening.text = fmtDur(viewModel.getTodayListeningTimeMs())
-                binding.tvTotalListening.text = fmtDur(viewModel.getTotalListeningTimeMs())
+                renderTotalListeningTime(viewModel.getTotalListeningTimeMs())
             }
         }
 
@@ -100,7 +108,30 @@ class AnalyticsFragment : Fragment() {
         val cutoff = periodStart()
         val periodEvents = events.filter { cutoff == null || it.startedAt >= cutoff }
         binding.tvTodayListening.text  = fmtDur(viewModel.getTodayListeningTimeMs())
-        binding.tvTotalListening.text  = fmtDur(viewModel.getTotalListeningTimeMs())
+        renderTotalListeningTime(viewModel.getTotalListeningTimeMs())
+        val activeDayStarts = events.asSequence()
+            .filter { it.listenedMs > 0L }
+            .map { event ->
+                Calendar.getInstance().apply {
+                    timeInMillis = event.startedAt
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
+            }
+            .toSet()
+        val activeDays = activeDayStarts.size
+        val averageActiveDay = if (activeDays > 0) {
+            events.sumOf { it.listenedMs } / activeDays
+        } else 0L
+        binding.tvActiveDayAverage.text = fmtDur(averageActiveDay)
+        val streak = currentListeningStreak(activeDayStarts)
+        binding.tvCurrentStreak.text = if (streak > 0) {
+            "🔥 $streak ${if (streak == 1) "day" else "days"} streak"
+        } else {
+            "🔥 Start a new streak"
+        }
         binding.tvTotalPlays.text      = "${periodEvents.size}"
         binding.tvUniqueSongs.text     = "${periodEvents.map { it.songId }.distinct().size}"
 
@@ -127,10 +158,78 @@ class AnalyticsFragment : Fragment() {
         binding.tvStatsPeriod.text = when (selectedPeriod) {
             "week" -> "Most played · Last 7 days"
             "month" -> "Most played · Last 30 days"
-            "year" -> "Most played · Last year"
-            else -> "Most played · All time"
+            else -> "Most played · Last year"
         }
         adapter.submitList(viewModel.computeSongStats(10, cutoff))
+    }
+
+    private fun renderTotalListeningTime(totalMs: Long) {
+        val targetMinutes = TimeUnit.MILLISECONDS.toMinutes(totalMs).toInt().coerceAtLeast(0)
+        if (targetMinutes == lastTotalListeningTargetMinutes) return
+
+        val startMinutes = totalListeningAnimator?.animatedValue as? Int
+            ?: displayedTotalListeningMinutes
+            ?: 0
+        totalListeningAnimator?.cancel()
+        lastTotalListeningTargetMinutes = targetMinutes
+
+        if (UiMotion.isReduced(requireContext()) || startMinutes == targetMinutes) {
+            displayedTotalListeningMinutes = targetMinutes
+            binding.tvTotalListening.text = fmtDur(TimeUnit.MINUTES.toMillis(targetMinutes.toLong()))
+            totalListeningAnimator = null
+            return
+        }
+
+        totalListeningAnimator = ValueAnimator.ofInt(startMinutes, targetMinutes).apply {
+            duration = if (displayedTotalListeningMinutes == null) 900L else 650L
+            addUpdateListener { animator ->
+                val minutes = animator.animatedValue as Int
+                displayedTotalListeningMinutes = minutes
+                binding.tvTotalListening.text = fmtDur(TimeUnit.MINUTES.toMillis(minutes.toLong()))
+            }
+            start()
+        }
+    }
+
+    private fun currentListeningStreak(activeDayStarts: Set<Long>): Int {
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val streakDay = when {
+            activeDayStarts.contains(today.timeInMillis) -> today
+            activeDayStarts.contains(
+                (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }.timeInMillis
+            ) -> (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }
+            else -> return 0
+        }
+
+        var days = 0
+        while (activeDayStarts.contains(streakDay.timeInMillis)) {
+            days++
+            streakDay.add(Calendar.DAY_OF_YEAR, -1)
+        }
+        return days
+    }
+
+    private fun updatePeriodControl() {
+        listOf(
+            binding.periodWeek to "week",
+            binding.periodMonth to "month",
+            binding.periodYear to "year"
+        ).forEach { (option, period) ->
+            val selected = selectedPeriod == period
+            option.setBackgroundResource(
+                if (selected) R.drawable.bg_period_selected else R.drawable.bg_period_unselected
+            )
+            option.setTextColor(
+                if (selected) resolveThemeColor(com.google.android.material.R.attr.colorOnPrimary)
+                else requireContext().getColor(R.color.text_secondary)
+            )
+            option.isSelected = selected
+        }
     }
 
     private fun periodStart(): Long? {
@@ -349,5 +448,12 @@ class AnalyticsFragment : Fragment() {
         return if (m > 0) "${m}m" else "${s}s"
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        totalListeningAnimator?.cancel()
+        totalListeningAnimator = null
+        displayedTotalListeningMinutes = null
+        lastTotalListeningTargetMinutes = null
+        super.onDestroyView()
+        _binding = null
+    }
 }

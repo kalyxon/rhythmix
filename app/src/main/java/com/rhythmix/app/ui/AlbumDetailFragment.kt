@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rhythmix.app.databinding.FragmentAlbumDetailBinding
 import com.rhythmix.app.model.Album
 import com.rhythmix.app.model.Song
@@ -124,20 +124,6 @@ class AlbumDetailFragment : Fragment() {
                 CreateAlbumDialogFragment.newFromMix(currentAlbum.id)
             }
             editor.show(childFragmentManager, "EditAlbumDialog")
-        }
-
-        if (currentAlbum.category == "Custom") {
-            binding.btnDeleteAlbum.visibility = View.VISIBLE
-            binding.btnDeleteAlbum.setOnClickListener {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Album?")
-                    .setMessage("Are you sure you want to delete '${currentAlbum.title}'? Music files won't be deleted.")
-                    .setPositiveButton("Delete") { _, _ -> viewModel.deleteAlbum(currentAlbum.id) }
-                    .setNegativeButton("Cancel", null)
-                    .show()
-            }
-        } else {
-            binding.btnDeleteAlbum.visibility = View.GONE
         }
 
         val allSongs = viewModel.songs.value ?: emptyList()

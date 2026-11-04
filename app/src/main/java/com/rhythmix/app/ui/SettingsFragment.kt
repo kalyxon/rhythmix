@@ -2,24 +2,33 @@ package com.rhythmix.app.ui
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.rhythmix.app.R
 import com.rhythmix.app.databinding.FragmentSettingsBinding
+import com.rhythmix.app.model.Song
 
 class SettingsFragment : Fragment() {
+
+    private data class ThemeOption(val id: String, val colorRes: Int)
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
+    private var updatingThemeSwitches = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
@@ -47,19 +56,47 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        viewModel.themeId.observe(viewLifecycleOwner) { theme ->
-            binding.themeEmerald.isChecked = theme == "emerald"
-            binding.themeCyber.isChecked = theme == "cyber"
-            binding.themeSunset.isChecked = theme == "sunset"
-            binding.themeCyan.isChecked = theme == "cyan"
-            binding.themeAmoled.isChecked = theme == "amoled"
+        val themeSwitches = themeSwitches()
+        themeSwitches.forEach { (switch, option) ->
+            val swatch = AppCompatResources.getDrawable(requireContext(), R.drawable.bg_theme_swatch)
+                ?: error("Theme swatch drawable is missing")
+            DrawableCompat.setTint(swatch, requireContext().getColor(option.colorRes))
+            switch.setCompoundDrawablesRelativeWithIntrinsicBounds(swatch, null, null, null)
+            switch.setOnCheckedChangeListener { button, checked ->
+                if (updatingThemeSwitches) return@setOnCheckedChangeListener
+                if (checked) {
+                    updatingThemeSwitches = true
+                    try {
+                        themeSwitches.forEach { (otherSwitch, _) ->
+                            otherSwitch.isChecked = otherSwitch == button
+                        }
+                    } finally {
+                        updatingThemeSwitches = false
+                    }
+                    viewModel.setTheme(option.id)
+                } else if (viewModel.themeId.value == option.id) {
+                    updatingThemeSwitches = true
+                    button.isChecked = true
+                    updatingThemeSwitches = false
+                }
+            }
         }
 
-        binding.themeEmerald.setOnClickListener { viewModel.setTheme("emerald") }
-        binding.themeCyber.setOnClickListener { viewModel.setTheme("cyber") }
-        binding.themeSunset.setOnClickListener { viewModel.setTheme("sunset") }
-        binding.themeCyan.setOnClickListener { viewModel.setTheme("cyan") }
-        binding.themeAmoled.setOnClickListener { viewModel.setTheme("amoled") }
+        viewModel.themeId.observe(viewLifecycleOwner) { theme ->
+            if (themeSwitches.none { (_, option) -> option.id == theme }) {
+                viewModel.setTheme("emerald")
+                return@observe
+            }
+            updatingThemeSwitches = true
+            try {
+                themeSwitches.forEach { (switch, option) ->
+                    switch.isChecked = option.id == theme
+                }
+            } finally {
+                updatingThemeSwitches = false
+            }
+        }
+
         binding.switchReduceMotion.setOnCheckedChangeListener { _, checked ->
             viewModel.setReduceMotion(checked)
         }
@@ -71,6 +108,11 @@ class SettingsFragment : Fragment() {
             viewModel.rescan()
             viewModel.navigate(AppScreen.Scanning)
         }
+        binding.btnRestoreRemoved.isEnabled = viewModel.storage.hasSavedFolder()
+        binding.btnRestoreRemoved.alpha = if (binding.btnRestoreRemoved.isEnabled) 1f else 0.45f
+        binding.btnRestoreRemoved.setOnClickListener {
+            viewModel.getRemovedSongs(::showRestoreRemovedSongsDialog)
+        }
 
         // Clear History with Text Input Confirmation ("CLEAR")
         binding.btnClearData.setOnClickListener {
@@ -78,38 +120,95 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    private fun showRestoreRemovedSongsDialog(songs: List<Song>) {
+        if (songs.isEmpty()) {
+            val hasRemovedSongs = viewModel.hasRemovedSongs()
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(if (hasRemovedSongs) "Restore hidden songs?" else "No removed songs")
+                .setMessage(
+                    if (hasRemovedSongs) {
+                        "Some songs were hidden before their details could be saved. " +
+                            "Restore all songs found in your selected music folder?"
+                    } else {
+                        "Songs you remove stay in the selected music folder. There are no hidden songs to restore right now."
+                    }
+                )
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton(if (hasRemovedSongs) "Restore all" else "Got it", null)
+                .show()
+            if (hasRemovedSongs) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    dialog.dismiss()
+                    viewModel.restoreAllRemovedSongs()
+                    viewModel.navigate(AppScreen.Scanning)
+                }
+            }
+            return
+        }
+
+        val selected = BooleanArray(songs.size)
+        val labels = songs.map { "${it.title} · ${it.artist}" }.toTypedArray()
+        lateinit var dialog: AlertDialog
+        dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Restore songs")
+            .setMessage("Choose songs to add back to your library.")
+            .setMultiChoiceItems(labels, selected) { _, which, checked ->
+                selected[which] = checked
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = selected.any { it }
+            }
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Restore selected", null)
+            .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
+            isEnabled = false
+            setOnClickListener {
+                val selectedSongs = songs.indices
+                    .filter { selected[it] }
+                    .map { songs[it] }
+                dialog.dismiss()
+                viewModel.restoreSongs(selectedSongs)
+                viewModel.navigate(AppScreen.Scanning)
+            }
+        }
+    }
+
     private fun showClearConfirmationDialog() {
         val ctx = requireContext()
-        val container = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            val pad = (20 * ctx.resources.displayMetrics.density).toInt()
-            setPadding(pad, pad / 2, pad, pad / 2)
-        }
-
-        val msgView = TextView(ctx).apply {
-            text = "This will permanently remove all play history and custom albums from rhythmix_data.json. Your music files remain untouched.\n\nType \"CLEAR\" below to confirm:"
-            textSize = 13f
-            setTextColor(ctx.getColor(R.color.text_secondary))
-            setLineSpacing(0f, 1.3f)
-        }
-
         val input = EditText(ctx).apply {
             hint = "Type CLEAR"
             setSingleLine()
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+            imeOptions = EditorInfo.IME_ACTION_DONE
             setBackgroundResource(R.drawable.bg_search)
             val p = (12 * ctx.resources.displayMetrics.density).toInt()
             setPadding(p, p, p, p)
             setTextColor(ctx.getColor(R.color.text_primary))
             setHintTextColor(ctx.getColor(R.color.text_tertiary))
+            textSize = 14f
         }
 
-        container.addView(msgView)
-        container.addView(input)
-
-        val dialog = AlertDialog.Builder(ctx)
-            .setTitle("Confirm History Reset")
-            .setView(container)
-            .setPositiveButton("Clear History") { _, _ ->
+        val horizontalPadding = (24 * ctx.resources.displayMetrics.density).toInt()
+        val inputContainer = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(horizontalPadding, 0, horizontalPadding, 0)
+            addView(
+                input,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+        val dialog = MaterialAlertDialogBuilder(ctx)
+            .setTitle("Clear listening history?")
+            .setMessage(
+                "This permanently deletes play history and custom albums from " +
+                    "rhythmix_data.json. Your music files will stay untouched.\n\n" +
+                    "Type CLEAR to confirm."
+            )
+            .setView(inputContainer)
+            .setPositiveButton("Clear history") { _, _ ->
                 viewModel.clearAnalytics()
             }
             .setNegativeButton("Cancel", null)
@@ -119,6 +218,7 @@ class SettingsFragment : Fragment() {
 
         val confirmBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
         confirmBtn.isEnabled = false
+        confirmBtn.setTextColor(ctx.getColor(R.color.red))
 
         input.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -128,6 +228,17 @@ class SettingsFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
+
+    private fun themeSwitches(): List<Pair<MaterialSwitch, ThemeOption>> = listOf(
+        binding.switchThemeEmerald to ThemeOption("emerald", R.color.emerald_accent),
+        binding.switchThemeCyber to ThemeOption("cyber", R.color.cyber_accent),
+        binding.switchThemeSunset to ThemeOption("sunset", R.color.sunset_accent),
+        binding.switchThemeCyan to ThemeOption("cyan", R.color.cyan_accent),
+        binding.switchThemeAmoled to ThemeOption("amoled", R.color.amoled_accent),
+        binding.switchThemeRose to ThemeOption("rose", R.color.rose_accent),
+        binding.switchThemeForest to ThemeOption("forest", R.color.forest_accent),
+        binding.switchThemeIndigo to ThemeOption("indigo", R.color.indigo_accent)
+    )
 
     override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

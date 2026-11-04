@@ -24,6 +24,7 @@ class StorageManager(private val context: Context) {
         private const val KEY_CACHED_SONGS = "cached_songs_json"
         private const val KEY_CACHED_SONGS_VERSION = "cached_songs_version"
         private const val KEY_REMOVED_SONG_IDS = "removed_song_ids"
+        private const val KEY_REMOVED_SONGS = "removed_songs_json"
         private const val ANALYTICS_FILE_NAME = "rhythmix_data.json"
         private const val ARTWORK_DIRECTORY_NAME = "Rhythmix Artwork"
         private const val ARTWORK_PREF_PREFIX = "song_artwork_"
@@ -56,7 +57,10 @@ class StorageManager(private val context: Context) {
             .putString(KEY_FOLDER_NAME, folderName)
             .remove(KEY_CACHED_SONGS)
             .apply {
-                if (previousFolder != uri) remove(KEY_REMOVED_SONG_IDS)
+                if (previousFolder != uri) {
+                    remove(KEY_REMOVED_SONG_IDS)
+                    remove(KEY_REMOVED_SONGS)
+                }
             }
             .apply()
     }
@@ -108,19 +112,109 @@ class StorageManager(private val context: Context) {
         return songs.filterNot { it.id in removedIds }
     }
 
+    fun getRemovedSongIds(): Set<String> = removedSongIds()
+
+    suspend fun getRemovedSongs(folderUri: Uri): List<Song> {
+        val discoveredSongs = scanSongs(folderUri)
+        val removedIds = removedSongIds()
+        val savedRemovedSongs = removedSongRecords()
+        val matchedSavedSongs = savedRemovedSongs.mapNotNull { removed ->
+            discoveredSongs.find { it.id == removed.id }
+                ?: discoveredSongs.find { it.uri.toString() == removed.uriStr }
+                ?: discoveredSongs.find { it.fileName.equals(removed.fileName, ignoreCase = true) }
+        }
+        val matchedLegacySongs = discoveredSongs.filter { it.id in removedIds }
+        val matchedSongs = (matchedSavedSongs + matchedLegacySongs).distinctBy { it.id }
+        return when {
+            matchedSongs.isNotEmpty() -> matchedSongs
+            removedIds.isNotEmpty() -> discoveredSongs
+            else -> emptyList()
+        }
+    }
+
+    fun restoreSongsToLibrary(songs: List<Song>) {
+        if (songs.isEmpty()) return
+        val selectedIds = songs.map { it.id }.toSet()
+        val selectedUris = songs.map { it.uri.toString() }.toSet()
+        val selectedFileNames = songs.map { it.fileName.lowercase() }.toSet()
+        val savedRemovedSongs = removedSongRecords()
+        val matchedSavedRemovedIds = savedRemovedSongs
+            .filter { removed ->
+                removed.id in selectedIds ||
+                    removed.uriStr in selectedUris ||
+                    removed.fileName.lowercase() in selectedFileNames
+            }
+            .map { it.id }
+            .toSet()
+        val restoredIds = matchedSavedRemovedIds + selectedIds
+        val oldRemovedIds = removedSongIds()
+        val restoringLegacyFallback = matchedSavedRemovedIds.isEmpty() &&
+            selectedIds.intersect(oldRemovedIds).isEmpty()
+        val remainingRemovedIds = if (restoringLegacyFallback) {
+            emptySet()
+        } else {
+            oldRemovedIds - restoredIds
+        }
+        val remainingRemovedSongs = if (restoringLegacyFallback) {
+            emptyList()
+        } else {
+            savedRemovedSongs.filterNot { it.id in restoredIds }
+        }
+        prefs.edit().apply {
+            if (remainingRemovedIds.isEmpty()) {
+                remove(KEY_REMOVED_SONG_IDS)
+            } else {
+                putStringSet(KEY_REMOVED_SONG_IDS, remainingRemovedIds)
+            }
+            if (remainingRemovedSongs.isEmpty()) {
+                remove(KEY_REMOVED_SONGS)
+            } else {
+                putString(KEY_REMOVED_SONGS, gson.toJson(remainingRemovedSongs))
+            }
+        }.apply()
+    }
+
+    fun restoreAllSongsToLibrary() {
+        prefs.edit()
+            .remove(KEY_REMOVED_SONG_IDS)
+            .remove(KEY_REMOVED_SONGS)
+            .apply()
+    }
+
+    fun hasRemovedSongRecords(): Boolean = removedSongRecords().isNotEmpty()
+
     fun getSongArtworkUri(songId: String): Uri? =
         prefs.getString("$ARTWORK_PREF_PREFIX$songId", null)?.let(Uri::parse)
+
+    suspend fun restoreSongArtwork(songId: String): Boolean = withContext(Dispatchers.IO) {
+        val preferenceKey = "$ARTWORK_PREF_PREFIX$songId"
+        val artworkUri = prefs.getString(preferenceKey, null)?.let(Uri::parse)
+            ?: return@withContext false
+        prefs.edit().remove(preferenceKey).apply()
+        try {
+            if (DocumentFile.fromSingleUri(context, artworkUri)?.delete() != true) {
+                Log.w(TAG, "Unable to delete replaced artwork for song $songId")
+            }
+        } catch (error: Exception) {
+            Log.w(TAG, "Unable to delete replaced artwork for song $songId", error)
+        }
+        true
+    }
 
     fun saveSongMetadata(song: Song) {
         val metadata = EditableSongMetadata(song.title, song.artist, song.album)
         prefs.edit().putString("$SONG_METADATA_PREF_PREFIX${song.id}", gson.toJson(metadata)).apply()
     }
 
-    fun removeSongFromLibrary(songId: String) {
-        val removedIds = removedSongIds().toMutableSet().apply { add(songId) }
+    fun removeSongFromLibrary(song: Song) {
+        val removedIds = removedSongIds().toMutableSet().apply { add(song.id) }
+        val removedSongs = removedSongRecords()
+            .filterNot { it.id == song.id }
+            .plus(song.toCachedSong())
         prefs.edit()
             .putStringSet(KEY_REMOVED_SONG_IDS, removedIds)
-            .remove("$SONG_METADATA_PREF_PREFIX$songId")
+            .putString(KEY_REMOVED_SONGS, gson.toJson(removedSongs))
+            .remove("$SONG_METADATA_PREF_PREFIX${song.id}")
             .apply()
     }
 
@@ -225,6 +319,21 @@ class StorageManager(private val context: Context) {
 
     private fun removedSongIds(): Set<String> =
         prefs.getStringSet(KEY_REMOVED_SONG_IDS, emptySet())?.toSet().orEmpty()
+
+    private fun removedSongRecords(): List<CachedSong> {
+        val json = prefs.getString(KEY_REMOVED_SONGS, null) ?: return emptyList()
+        return try {
+            val type = object : TypeToken<List<CachedSong>>() {}.type
+            gson.fromJson<List<CachedSong>>(json, type).orEmpty()
+        } catch (error: Exception) {
+            Log.w(TAG, "Removed song records could not be read", error)
+            emptyList()
+        }
+    }
+
+    private fun Song.toCachedSong() = CachedSong(
+        id, title, artist, album, durationMs, uri.toString(), fileName, fileSize, addedAt
+    )
 
     private fun applySavedSongMetadata(song: Song): Song {
         val json = prefs.getString("$SONG_METADATA_PREF_PREFIX${song.id}", null) ?: return song

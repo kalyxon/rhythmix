@@ -137,6 +137,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun restoreSongArtwork(songId: String) {
+        viewModelScope.launch {
+            try {
+                if (storage.restoreSongArtwork(songId)) {
+                    ArtworkLoader.clear(songId)
+                    _artworkUpdated.value = songId
+                    _toastMessage.value = "Original artwork restored."
+                } else {
+                    _toastMessage.value = "This song has no custom artwork to restore."
+                }
+            } catch (error: Exception) {
+                Log.e(TAG, "Unable to restore artwork for song $songId", error)
+                _toastMessage.value = error.message ?: "Unable to restore original artwork."
+            }
+        }
+    }
+
     private suspend fun scanFolderInternal(folderUri: Uri) {
         _screen.postValue(AppScreen.Scanning)
         val discoveredSongs = storage.scanSongs(folderUri) { done, total ->
@@ -238,16 +255,32 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteAlbum(albumId: String) {
         val current = _analytics.value ?: AnalyticsData()
-        val updated = current.copy(albums = current.albums.filter { it.id != albumId })
+        if (albumId in setOf("smart_favs", "smart_all", "smart_recent", "smart_top")) {
+            _toastMessage.postValue("This built-in mix can't be deleted.")
+            return
+        }
+        val isSmartMix = albumId.startsWith("smart_artist_")
+        if (!isSmartMix && current.albums.none { it.id == albumId && it.category == "Custom" }) return
+        val updated = if (isSmartMix) {
+            current.copy(
+                albums = current.albums.filterNot { it.id == albumId },
+                deletedSmartMixIds = (current.deletedSmartMixIds + albumId).distinct()
+            )
+        } else {
+            current.copy(albums = current.albums.filterNot { it.id == albumId })
+        }
         _analytics.postValue(updated)
         viewModelScope.launch {
             storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
         }
-        _toastMessage.postValue("Album deleted.")
+        _toastMessage.postValue(if (isSmartMix) "Smart mix deleted." else "Album deleted.")
         if (_screen.value is AppScreen.AlbumDetail) {
             navigate(AppScreen.Albums)
         }
     }
+
+    fun canDeleteAlbum(album: Album): Boolean =
+        album.category == "Custom" || album.id.startsWith("smart_artist_")
 
     fun updateAlbum(
         albumId: String,
@@ -285,6 +318,36 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         _toastMessage.postValue("Album '${updatedAlbum.title}' updated.")
     }
 
+    fun updateSmartMix(
+        albumId: String,
+        title: String,
+        description: String,
+        songIds: List<String>,
+        collageStyle: String,
+        coverUri: String?
+    ) {
+        if (title.isBlank()) {
+            _toastMessage.postValue("Please enter a mix title.")
+            return
+        }
+
+        val source = getSmartCategoryAlbums().find { it.id == albumId } ?: return
+        val updatedMix = source.copy(
+            title = title.trim(),
+            description = description.trim(),
+            songIds = songIds.distinct(),
+            collageStyle = collageStyle,
+            coverUri = coverUri
+        )
+        val current = _analytics.value ?: AnalyticsData()
+        val updated = current.copy(albums = current.albums.filterNot { it.id == albumId } + updatedMix)
+        _analytics.postValue(updated)
+        viewModelScope.launch {
+            storage.getSavedFolderUri()?.let { storage.saveAnalytics(it, updated) }
+        }
+        _toastMessage.postValue("Mix '${updatedMix.title}' updated.")
+    }
+
     fun updateSongMetadata(songId: String, title: String, artist: String, album: String) {
         val existing = _songs.value.orEmpty().find { it.id == songId } ?: return
         if (title.isBlank() || artist.isBlank()) {
@@ -307,10 +370,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun removeSongFromLibrary(songId: String) {
-        val updatedSongs = _songs.value.orEmpty().filterNot { it.id == songId }
+        val currentSongs = _songs.value.orEmpty()
+        val removedSong = currentSongs.find { it.id == songId } ?: return
+        val updatedSongs = currentSongs.filterNot { it.id == songId }
         if (updatedSongs.size == _songs.value.orEmpty().size) return
 
-        storage.removeSongFromLibrary(songId)
+        storage.removeSongFromLibrary(removedSong)
         storage.saveSongsToCache(updatedSongs)
         _songs.value = updatedSongs
         playerController.removeSongFromQueue(songId)
@@ -408,7 +473,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             ))
         }
 
+        val current = _analytics.value ?: AnalyticsData()
+        val savedMixes = current.albums.associateBy { it.id }
         return result
+            .filterNot { it.id in current.deletedSmartMixIds }
+            .map { generated -> savedMixes[generated.id] ?: generated }
     }
 
     fun getAlbumById(id: String): Album? {
@@ -474,6 +543,30 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         storage.clearSongCache()
         val uri = storage.getSavedFolderUri() ?: return
         viewModelScope.launch { scanFolderInternal(uri) }
+    }
+
+    fun getRemovedSongs(onResult: (List<Song>) -> Unit) {
+        val uri = storage.getSavedFolderUri() ?: run {
+            onResult(emptyList())
+            return
+        }
+        viewModelScope.launch {
+            onResult(storage.getRemovedSongs(uri))
+        }
+    }
+
+    fun hasRemovedSongs(): Boolean =
+        storage.getRemovedSongIds().isNotEmpty() || storage.hasRemovedSongRecords()
+
+    fun restoreSongs(songs: List<Song>) {
+        if (songs.isEmpty()) return
+        storage.restoreSongsToLibrary(songs)
+        rescan()
+    }
+
+    fun restoreAllRemovedSongs() {
+        storage.restoreAllSongsToLibrary()
+        rescan()
     }
 
     fun getSortedSongs(): List<Song> {

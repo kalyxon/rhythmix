@@ -1,7 +1,10 @@
 package com.rhythmix.app.ui
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
@@ -12,6 +15,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.rhythmix.app.R
@@ -25,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private var currentScreen: AppScreen? = null
     private var currentFragment: Fragment? = null
     private var activeTheme: String? = null
+    private var activeReduceMotion: Boolean? = null
     private var lastMiniSongId: String? = null
     private var lastMiniPlaying: Boolean? = null
     private var pendingArtworkSongId: String? = null
@@ -60,28 +66,42 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("rhythmix_prefs", Context.MODE_PRIVATE)
         val savedTheme = prefs.getString("current_theme_id", "emerald") ?: "emerald"
         activeTheme = savedTheme
+        activeReduceMotion = UiMotion.isReduced(this)
         setTheme(getThemeResId(savedTheme))
 
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyStatusBarColor()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             binding.bottomNav.miniPlayer.miniBackgroundArtwork.setRenderEffect(
-                RenderEffect.createBlurEffect(28f, 28f, Shader.TileMode.CLAMP)
+                RenderEffect.createBlurEffect(14f, 14f, Shader.TileMode.CLAMP)
             )
         } else {
-            binding.bottomNav.miniPlayer.miniBackgroundArtwork.alpha = 0.18f
+            binding.bottomNav.miniPlayer.miniBackgroundArtwork.alpha = 0.24f
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets -> insets }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         // Observe Theme selection
         viewModel.themeId.observe(this) { theme ->
+            updateLauncherIcon(theme)
             if (activeTheme != null && activeTheme != theme) {
                 activeTheme = theme
                 recreate() // Apply new theme dynamically
+            }
+        }
+        viewModel.reduceMotion.observe(this) { enabled ->
+            if (activeReduceMotion != null && activeReduceMotion != enabled) {
+                activeReduceMotion = enabled
+                recreate()
             }
         }
 
@@ -179,13 +199,50 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun applyStatusBarColor() {
+        window.statusBarColor = Color.TRANSPARENT
+        WindowCompat.getInsetsController(window, binding.root).isAppearanceLightStatusBars = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isStatusBarContrastEnforced = false
+        }
+    }
+
     private fun getThemeResId(themeId: String): Int {
         return when (themeId) {
             "cyber"  -> R.style.Theme_Rhythmix_Cyberpunk
             "sunset" -> R.style.Theme_Rhythmix_Sunset
             "cyan"   -> R.style.Theme_Rhythmix_Cyan
             "amoled" -> R.style.Theme_Rhythmix_Amoled
+            "rose"   -> R.style.Theme_Rhythmix_Rose
+            "forest" -> R.style.Theme_Rhythmix_Forest
+            "indigo" -> R.style.Theme_Rhythmix_Indigo
             else     -> R.style.Theme_Rhythmix
+        }
+    }
+
+    private fun updateLauncherIcon(themeId: String) {
+        val aliases = mapOf(
+            "emerald" to "Emerald",
+            "cyber" to "Cyber",
+            "sunset" to "Sunset",
+            "cyan" to "Cyan",
+            "amoled" to "Amoled",
+            "rose" to "Rose",
+            "forest" to "Forest",
+            "indigo" to "Indigo"
+        )
+        val selected = aliases[themeId] ?: aliases.getValue("emerald")
+        aliases.values.forEach { suffix ->
+            val component = ComponentName(this, "$packageName.ui.MainActivity$suffix")
+            packageManager.setComponentEnabledSetting(
+                component,
+                if (suffix == selected) {
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                } else {
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                },
+                PackageManager.DONT_KILL_APP
+            )
         }
     }
 
@@ -241,7 +298,10 @@ class MainActivity : AppCompatActivity() {
         val typedValue = TypedValue()
         theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
         val accent = typedValue.data
-        val inactive = getColor(R.color.nav_inactive)
+        val inactive = TypedValue().let { value ->
+            theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, value, true)
+            value.data
+        }
 
         val icons = listOf(
             binding.bottomNav.navHomeIcon to binding.bottomNav.navHomeIndicator,

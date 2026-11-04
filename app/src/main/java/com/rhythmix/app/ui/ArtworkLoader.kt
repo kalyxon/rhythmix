@@ -2,7 +2,9 @@ package com.rhythmix.app.ui
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.util.Log
 import android.util.LruCache
 import android.widget.ImageView
@@ -91,7 +93,10 @@ object ArtworkLoader {
                 }
             }
         }
-        if (bitmap != null) imageView.setImageBitmap(bitmap)
+        when {
+            bitmap != null -> imageView.setImageBitmap(bitmap)
+            hasNoArtwork(song) -> imageView.setImageResource(fallbackResource(song))
+        }
     }
 
     fun getOrRequestBitmap(song: Song, context: android.content.Context, onLoaded: () -> Unit): Bitmap? {
@@ -149,8 +154,11 @@ object ArtworkLoader {
         customUri: android.net.Uri?
     ): Bitmap? {
         if (customUri != null) {
-            decodeBitmap(context, customUri)?.let { return it }
-            Log.w(TAG, "Unable to load saved artwork for ${song.fileName}; trying embedded artwork")
+            return decodeBitmap(context, customUri).also {
+                if (it == null) {
+                    Log.w(TAG, "Unable to load saved artwork for ${song.fileName}")
+                }
+            }
         }
 
         val retriever = MediaMetadataRetriever()
@@ -185,6 +193,23 @@ object ArtworkLoader {
 
     private fun decodeBitmap(context: android.content.Context, uri: android.net.Uri): Bitmap? {
         return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
+                return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                    val width = info.size.width
+                    val height = info.size.height
+                    val largestDimension = maxOf(width, height)
+                    if (largestDimension > 1024) {
+                        val scale = 1024f / largestDimension
+                        decoder.setTargetSize(
+                            (width * scale).toInt().coerceAtLeast(1),
+                            (height * scale).toInt().coerceAtLeast(1)
+                        )
+                    }
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+            }
+
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             context.contentResolver.openInputStream(uri)?.use {
                 BitmapFactory.decodeStream(it, null, bounds)

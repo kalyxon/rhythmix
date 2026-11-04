@@ -90,10 +90,11 @@ class AlbumsFragment : Fragment() {
         val smartAlbums = viewModel.getSmartCategoryAlbums().filter(::matchesSearch)
         smartAdapter.submitList(smartAlbums)
 
-        val customAlbums = viewModel.analytics.value?.albums.orEmpty().filter(::matchesSearch)
+        val allCustomAlbums = viewModel.analytics.value?.albums.orEmpty()
+            .filter { it.category == "Custom" }
+        val customAlbums = allCustomAlbums.filter(::matchesSearch)
         customAdapter.submitList(customAlbums)
 
-        val allCustomAlbums = viewModel.analytics.value?.albums.orEmpty()
         val showSmart = albumFilter != "custom"
         val showCustom = albumFilter != "smart"
         binding.smartAlbumHeader.visibility = if (showSmart) View.VISIBLE else View.GONE

@@ -11,10 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rhythmix.app.databinding.DialogCreateAlbumBinding
 import com.rhythmix.app.model.Song
 import com.rhythmix.app.ui.adapter.SongPickerAdapter
@@ -79,6 +81,16 @@ class CreateAlbumDialogFragment : DialogFragment() {
         if (sourceAlbum != null) {
             binding.tvDialogTitle.text = if (editingAlbum != null) "Edit Album" else "Customize Smart Mix"
             binding.btnCreate.text = if (editingAlbum != null) "Save Changes" else "Save My Album"
+            binding.btnDeleteAlbum.visibility =
+                if (viewModel.canDeleteAlbum(sourceAlbum)) View.VISIBLE else View.GONE
+            binding.btnDeleteAlbum.contentDescription =
+                if (sourceAlbum.category == "Custom") "Delete album" else "Delete smart mix"
+            binding.btnDeleteAlbum.setOnClickListener {
+                confirmDeleteAlbum(sourceAlbum.title, sourceAlbum.category == "Custom") {
+                    viewModel.deleteAlbum(sourceAlbum.id)
+                    dismiss()
+                }
+            }
             binding.etAlbumTitle.setText(sourceAlbum.title)
             binding.etAlbumDesc.setText(sourceAlbum.description)
             selectedStyle = sourceAlbum.collageStyle
@@ -134,11 +146,17 @@ class CreateAlbumDialogFragment : DialogFragment() {
             val title = binding.etAlbumTitle.text?.toString() ?: ""
             val desc = binding.etAlbumDesc.text?.toString() ?: ""
             val selectedIds = pickerAdapter.getSelectedSongIds()
-            if (title.isBlank() || selectedIds.isEmpty()) {
-                if (editingAlbum == null) {
-                    viewModel.createAlbum(title, desc, selectedIds, selectedStyle, selectedCoverUri?.toString())
-                } else {
-                    viewModel.updateAlbum(
+            fun saveChanges() {
+                when {
+                    templateAlbum != null -> viewModel.updateSmartMix(
+                        templateAlbum.id,
+                        title,
+                        desc,
+                        selectedIds,
+                        selectedStyle,
+                        selectedCoverUri?.toString()
+                    )
+                    editingAlbum != null -> viewModel.updateAlbum(
                         editingAlbum.id,
                         title,
                         desc,
@@ -146,7 +164,18 @@ class CreateAlbumDialogFragment : DialogFragment() {
                         selectedStyle,
                         selectedCoverUri?.toString()
                     )
+                    else -> viewModel.createAlbum(
+                        title,
+                        desc,
+                        selectedIds,
+                        selectedStyle,
+                        selectedCoverUri?.toString()
+                    )
                 }
+            }
+
+            if (title.isBlank() || (selectedIds.isEmpty() && templateAlbum == null)) {
+                saveChanges()
                 return@setOnClickListener
             }
             selectedCoverUri?.let { uri ->
@@ -162,18 +191,7 @@ class CreateAlbumDialogFragment : DialogFragment() {
                 }
             }
 
-            if (editingAlbum == null) {
-                viewModel.createAlbum(title, desc, selectedIds, selectedStyle, selectedCoverUri?.toString())
-            } else {
-                viewModel.updateAlbum(
-                    editingAlbum.id,
-                    title,
-                    desc,
-                    selectedIds,
-                    selectedStyle,
-                    selectedCoverUri?.toString()
-                )
-            }
+            saveChanges()
             dismiss()
         }
     }
@@ -189,6 +207,23 @@ class CreateAlbumDialogFragment : DialogFragment() {
             .placeholder(com.rhythmix.app.R.drawable.ic_artwork_default)
             .error(com.rhythmix.app.R.drawable.ic_artwork_default)
             .into(binding.ivCoverPreview)
+    }
+
+    private fun confirmDeleteAlbum(title: String, isCustomAlbum: Boolean, onDelete: () -> Unit) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(if (isCustomAlbum) "Delete album?" else "Delete smart mix?")
+            .setMessage("'$title' will be removed from your collection. Your music files won't be affected.")
+            .setNegativeButton("Keep it", null)
+            .setPositiveButton("Delete", null)
+            .show()
+            .apply {
+                getButton(AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(requireContext().getColor(com.rhythmix.app.R.color.red))
+                getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    dismiss()
+                    onDelete()
+                }
+            }
     }
 
     override fun onDestroyView() {

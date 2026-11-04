@@ -47,6 +47,17 @@ class SongDetailFragment : Fragment() {
         binding.btnChangeArtwork.setOnClickListener {
             currentSong()?.let { (activity as? MainActivity)?.chooseArtwork(it) }
         }
+        binding.btnRestoreArtwork.setOnClickListener {
+            val song = currentSong() ?: return@setOnClickListener
+            AlertDialog.Builder(requireContext())
+                .setTitle("Restore original artwork?")
+                .setMessage("This removes your custom image and shows the song's embedded artwork, or its fallback cover if it has no embedded artwork.")
+                .setPositiveButton("Restore") { _, _ ->
+                    viewModel.restoreSongArtwork(song.id)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
         binding.btnSaveSong.setOnClickListener {
             val id = songId ?: return@setOnClickListener
             viewModel.updateSongMetadata(
@@ -64,7 +75,10 @@ class SongDetailFragment : Fragment() {
             val song = currentSong() ?: return@setOnClickListener
             AlertDialog.Builder(requireContext())
                 .setTitle("Remove from library?")
-                .setMessage("'${song.title}' will be hidden from Rhythmix. The audio file will stay in your music folder.")
+                .setMessage(
+                    "'${song.title}' will be hidden from Rhythmix, but the file stays in your music folder. " +
+                        "Restore it later from Settings > Your Music > Restore removed songs."
+                )
                 .setPositiveButton("Remove") { _, _ -> viewModel.removeSongFromLibrary(song.id) }
                 .setNegativeButton("Cancel", null)
                 .show()
@@ -75,6 +89,7 @@ class SongDetailFragment : Fragment() {
         viewModel.artworkUpdated.observe(viewLifecycleOwner) { updatedId ->
             if (updatedId == songId) currentSong()?.let {
                 ArtworkLoader.load(it, binding.ivSongArtwork)
+                updateArtworkActions(it)
             }
         }
         render()
@@ -100,6 +115,7 @@ class SongDetailFragment : Fragment() {
             renderedSong = song
         }
         ArtworkLoader.load(song, binding.ivSongArtwork)
+        updateArtworkActions(song)
         val playCount = viewModel.getSongPlayCount(song.id)
         binding.tvSongStats.text =
             "${song.durationMs / 60_000}:${"%02d".format((song.durationMs / 1_000) % 60)} · Played $playCount ${if (playCount == 1) "time" else "times"}"
@@ -115,6 +131,11 @@ class SongDetailFragment : Fragment() {
         } else {
             "Appears in: ${membership.joinToString(", ")}"
         }
+    }
+
+    private fun updateArtworkActions(song: Song) {
+        binding.btnRestoreArtwork.visibility =
+            if (viewModel.storage.getSongArtworkUri(song.id) != null) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

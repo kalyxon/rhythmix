@@ -7,7 +7,10 @@
         <item name="colorOnPrimary">@color/emerald_on</item>
         <item name="colorPrimaryContainer">@color/emerald_dim</item>
         <item name="colorOnPrimaryContainer">@color/emerald_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_emerald</item>
         <item name="colorSecondary">@color/violet</item>
+        <item name="colorSecondaryContainer">@color/violet_dim</item>
         <item name="colorOnSecondary">@color/black</item>
 
         <item name="colorSurface">@color/surface</item>
@@ -16,6 +19,12 @@
         <item name="colorOnSurfaceVariant">@color/text_secondary</item>
         <item name="android:colorBackground">@color/bg</item>
         <item name="colorOutline">@color/surface_border</item>
+        <item name="rhythmixSurfaceElevated">@color/elevated</item>
+        <item name="rhythmixNavigationSurface">@color/nav_bg</item>
+        <item name="rhythmixPlayerArtworkTint">@color/emerald_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/emerald_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/emerald_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/emerald_player_scrim_end</item>
 
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:navigationBarColor">@color/nav_bg</item>
@@ -32,49 +41,190 @@
 
     <!-- Theme 2: Cyberpunk Neon -->
     <style name="Theme.Rhythmix.Cyberpunk" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/cyber_bg</item>
+        <item name="colorSurface">@color/cyber_surface</item>
+        <item name="colorSurfaceVariant">@color/cyber_surface2</item>
+        <item name="colorOutline">@color/cyber_border</item>
+        <item name="rhythmixSurfaceElevated">@color/cyber_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/cyber_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/cyber_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/cyber_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/cyber_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/cyber_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/cyber_bg</item>
+        <item name="android:navigationBarColor">@color/cyber_nav</item>
         <item name="colorPrimary">@color/cyber_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/cyber_dim</item>
         <item name="colorOnPrimaryContainer">@color/cyber_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/cyber_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_cyber</item>
         <item name="colorSecondary">@color/cyber_pink</item>
+        <item name="colorSecondaryContainer">@color/cyber_dim</item>
     </style>
 
     <!-- Theme 3: Sunset Amber -->
     <style name="Theme.Rhythmix.Sunset" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/sunset_bg</item>
+        <item name="colorSurface">@color/sunset_surface</item>
+        <item name="colorSurfaceVariant">@color/sunset_surface2</item>
+        <item name="colorOutline">@color/sunset_border</item>
+        <item name="rhythmixSurfaceElevated">@color/sunset_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/sunset_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/sunset_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/sunset_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/sunset_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/sunset_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/sunset_bg</item>
+        <item name="android:navigationBarColor">@color/sunset_nav</item>
         <item name="colorPrimary">@color/sunset_accent</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorPrimaryContainer">@color/sunset_dim</item>
         <item name="colorOnPrimaryContainer">@color/sunset_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/sunset_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_sunset</item>
         <item name="colorSecondary">@color/sunset_coral</item>
+        <item name="colorSecondaryContainer">@color/sunset_dim</item>
     </style>
 
     <!-- Theme 4: Oceanic Cyan -->
     <style name="Theme.Rhythmix.Cyan" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/cyan_bg</item>
+        <item name="colorSurface">@color/cyan_surface</item>
+        <item name="colorSurfaceVariant">@color/cyan_surface2</item>
+        <item name="colorOutline">@color/cyan_border</item>
+        <item name="rhythmixSurfaceElevated">@color/cyan_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/cyan_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/cyan_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/cyan_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/cyan_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/cyan_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/cyan_bg</item>
+        <item name="android:navigationBarColor">@color/cyan_nav</item>
         <item name="colorPrimary">@color/cyan_accent</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorPrimaryContainer">@color/cyan_dim</item>
         <item name="colorOnPrimaryContainer">@color/cyan_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/cyan_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_cyan</item>
         <item name="colorSecondary">@color/cyan_blue</item>
+        <item name="colorSecondaryContainer">@color/cyan_dim</item>
     </style>
 
     <!-- Theme 5: AMOLED Midnight -->
     <style name="Theme.Rhythmix.Amoled" parent="Theme.Rhythmix">
         <item name="android:colorBackground">@color/amoled_bg</item>
         <item name="colorSurface">@color/amoled_surface</item>
-        <item name="colorSurfaceVariant">#141416</item>
+        <item name="colorSurfaceVariant">@color/amoled_surface2</item>
+        <item name="colorOutline">@color/amoled_border</item>
+        <item name="rhythmixSurfaceElevated">@color/amoled_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/amoled_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/amoled_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/amoled_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/amoled_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/amoled_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/amoled_bg</item>
+        <item name="android:navigationBarColor">@color/amoled_nav</item>
         <item name="colorPrimary">@color/amoled_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/amoled_dim</item>
         <item name="colorOnPrimaryContainer">@color/amoled_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/amoled_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_amoled</item>
+        <item name="colorSecondary">@color/amoled_light</item>
+        <item name="colorSecondaryContainer">@color/amoled_dim</item>
+    </style>
+
+    <style name="Theme.Rhythmix.Rose" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/rose_bg</item>
+        <item name="colorSurface">@color/rose_surface</item>
+        <item name="colorSurfaceVariant">@color/rose_surface2</item>
+        <item name="colorOutline">@color/rose_border</item>
+        <item name="rhythmixSurfaceElevated">@color/rose_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/rose_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/rose_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/rose_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/rose_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/rose_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/rose_bg</item>
+        <item name="android:navigationBarColor">@color/rose_nav</item>
+        <item name="colorPrimary">@color/rose_accent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/rose_dim</item>
+        <item name="colorOnPrimaryContainer">@color/rose_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/rose_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_rose</item>
+        <item name="colorSecondary">@color/rose_secondary</item>
+        <item name="colorSecondaryContainer">@color/rose_dim</item>
+    </style>
+
+    <style name="Theme.Rhythmix.Forest" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/forest_bg</item>
+        <item name="colorSurface">@color/forest_surface</item>
+        <item name="colorSurfaceVariant">@color/forest_surface2</item>
+        <item name="colorOutline">@color/forest_border</item>
+        <item name="rhythmixSurfaceElevated">@color/forest_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/forest_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/forest_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/forest_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/forest_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/forest_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/forest_bg</item>
+        <item name="android:navigationBarColor">@color/forest_nav</item>
+        <item name="colorPrimary">@color/forest_accent</item>
+        <item name="colorOnPrimary">@color/forest_bg</item>
+        <item name="colorPrimaryContainer">@color/forest_dim</item>
+        <item name="colorOnPrimaryContainer">@color/forest_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/forest_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_forest</item>
+        <item name="colorSecondary">@color/forest_secondary</item>
+        <item name="colorSecondaryContainer">@color/forest_dim</item>
+    </style>
+
+    <style name="Theme.Rhythmix.Indigo" parent="Theme.Rhythmix">
+        <item name="android:colorBackground">@color/indigo_bg</item>
+        <item name="colorSurface">@color/indigo_surface</item>
+        <item name="colorSurfaceVariant">@color/indigo_surface2</item>
+        <item name="colorOutline">@color/indigo_border</item>
+        <item name="rhythmixSurfaceElevated">@color/indigo_elevated</item>
+        <item name="rhythmixNavigationSurface">@color/indigo_nav</item>
+        <item name="rhythmixPlayerArtworkTint">@color/indigo_player_tint</item>
+        <item name="rhythmixPlayerScrimStart">@color/indigo_player_scrim_start</item>
+        <item name="rhythmixPlayerScrimCenter">@color/indigo_player_scrim_center</item>
+        <item name="rhythmixPlayerScrimEnd">@color/indigo_player_scrim_end</item>
+        <item name="android:statusBarColor">@color/indigo_bg</item>
+        <item name="android:navigationBarColor">@color/indigo_nav</item>
+        <item name="colorPrimary">@color/indigo_accent</item>
+        <item name="colorOnPrimary">@color/indigo_bg</item>
+        <item name="colorPrimaryContainer">@color/indigo_dim</item>
+        <item name="colorOnPrimaryContainer">@color/indigo_light</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/indigo_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_launcher_theme_indigo</item>
+        <item name="colorSecondary">@color/indigo_secondary</item>
+        <item name="colorSecondaryContainer">@color/indigo_dim</item>
     </style>
 
     <style name="Widget.Rhythmix.Chip" parent="Widget.Material3.Chip.Filter">
         <item name="chipBackgroundColor">@color/chip_background</item>
-        <item name="chipStrokeColor">@color/surface_border</item>
+        <item name="chipStrokeColor">?attr/colorOutline</item>
         <item name="chipStrokeWidth">0dp</item>
         <item name="android:textColor">@color/chip_text</item>
         <item name="chipCornerRadius">100dp</item>
         <item name="checkedIconVisible">false</item>
+    </style>
+
+    <style name="Widget.Rhythmix.ThemeSwitch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:background">@drawable/bg_theme_option</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="thumbTint">@color/theme_switch_thumb</item>
+        <item name="trackTint">@color/theme_switch_track</item>
     </style>
 
 </resources>

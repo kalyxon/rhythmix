@@ -1,82 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_shell"
-    android:orientation="vertical">
+    android:background="@drawable/bg_shell">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_songs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="104dp"
+        android:scrollbars="vertical" />
 
     <LinearLayout
+        android:id="@+id/empty_library"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="10dp">
+        android:padding="32dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_artwork_default" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tv_empty_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your music"
+            android:layout_marginTop="14dp"
+            android:text="No songs found"
             android:textColor="@color/text_primary"
-            android:textSize="26sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tv_empty_hint"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="Long-press a track to edit its details"
-            android:textColor="@color/text_tertiary"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/library_content"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_songs"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="8dp"
-            android:scrollbars="vertical" />
-
-        <LinearLayout
-            android:id="@+id/empty_library"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
             android:gravity="center"
-            android:orientation="vertical"
-            android:padding="32dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/ic_artwork_default" />
-
-            <TextView
-                android:id="@+id/tv_empty_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="No songs found"
-                android:textColor="@color/text_primary"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_empty_hint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:text="Try another search or add music to your folder."
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
-        </LinearLayout>
-    </FrameLayout>
-</LinearLayout>
+            android:text="Try another search or add music to your folder."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+</FrameLayout>

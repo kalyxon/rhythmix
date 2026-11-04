@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
     <LinearLayout
@@ -62,9 +62,22 @@
                 android:layout_marginTop="8dp"
                 android:text="Replace artwork"
                 android:textAllCaps="false"
-                app:backgroundTint="@color/surface2"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:cornerRadius="100dp"
-                app:strokeColor="@color/surface_border"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRestoreArtwork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Restore original artwork"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:backgroundTint="?attr/colorSurfaceVariant"
+                app:cornerRadius="100dp"
+                app:strokeColor="?attr/colorOutline"
                 app:strokeWidth="1dp" />
 
             <TextView
@@ -81,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:hint="Title"
-                app:boxStrokeColor="@color/accent"
+                app:boxStrokeColor="?attr/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -97,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Artist"
-                app:boxStrokeColor="@color/accent"
+                app:boxStrokeColor="?attr/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -113,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Album"
-                app:boxStrokeColor="@color/accent"
+                app:boxStrokeColor="?attr/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -149,9 +162,9 @@
                 android:layout_marginTop="10dp"
                 android:text="Remove from library"
                 android:textColor="@color/red"
-                app:backgroundTint="@color/surface2"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:cornerRadius="100dp"
-                app:strokeColor="@color/surface_border"
+                app:strokeColor="?attr/colorOutline"
                 app:strokeWidth="1dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

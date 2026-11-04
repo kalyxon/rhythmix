@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:alpha="0.42"
+        android:alpha="0.38"
         android:src="@drawable/ic_artwork_default" />
 
     <View
@@ -104,7 +104,7 @@
             android:contentDescription="Play or pause"
             android:padding="11dp"
             android:src="@drawable/ic_play"
-            app:tint="@color/accent_on" />
+            app:tint="?attr/colorOnPrimary" />
 
         <ImageButton
             android:id="@+id/btn_next"
@@ -130,5 +130,5 @@
         android:focusable="false"
         android:progress="0"
         android:progressBackgroundTint="#558A9076"
-        android:progressTint="@color/accent" />
+        android:progressTint="?attr/colorPrimary" />
 </FrameLayout>

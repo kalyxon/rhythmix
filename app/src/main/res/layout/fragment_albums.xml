@@ -30,20 +30,32 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingHorizontal="12dp"
                     android:paddingTop="18dp"
                     android:paddingBottom="12dp">
 
                     <TextView
                         android:id="@+id/tv_albums_title"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="Albums &amp; mixes"
                         android:textColor="@color/text_primary"
                         android:textSize="28sp"
                         android:textStyle="bold"
                         android:letterSpacing="-0.02" />
+
+                    <ImageButton
+                        android:id="@+id/fabCreateAlbum"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_btn"
+                        android:contentDescription="@string/create_album"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="?attr/colorPrimary" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -208,17 +220,4 @@
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabCreateAlbum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="98dp"
-        android:contentDescription="@string/create_album"
-        app:icon="@drawable/ic_library"
-        app:iconTint="@color/accent_on"
-        app:backgroundTint="@color/accent"
-        app:fabSize="normal"
-        app:elevation="6dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

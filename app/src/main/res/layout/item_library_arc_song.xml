@@ -65,6 +65,6 @@
             android:padding="13dp"
             android:src="@drawable/ic_play"
             android:visibility="gone"
-            app:tint="@color/accent_on" />
+            app:tint="?attr/colorOnPrimary" />
     </LinearLayout>
 </FrameLayout>

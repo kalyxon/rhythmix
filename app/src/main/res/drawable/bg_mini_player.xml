@@ -2,8 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
         android:angle="0"
-        android:startColor="#273A3020"
-        android:centerColor="#273A3020"
-        android:endColor="#273A3020" />
+        android:startColor="?attr/rhythmixPlayerArtworkTint"
+        android:centerColor="?attr/rhythmixPlayerArtworkTint"
+        android:endColor="?attr/rhythmixPlayerArtworkTint" />
     <corners android:radius="20dp" />
 </shape>

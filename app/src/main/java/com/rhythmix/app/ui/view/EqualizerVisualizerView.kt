@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.rhythmix.app.R
+import com.rhythmix.app.ui.UiMotion
 import kotlin.random.Random
 
 /**
@@ -40,7 +41,7 @@ class EqualizerVisualizerView @JvmOverloads constructor(
     var isPlaying: Boolean = false
         set(value) {
             field = value
-            if (value) startAnimation() else stopAnimation()
+            if (value && !UiMotion.isReduced(context)) startAnimation() else stopAnimation()
         }
 
     init {
@@ -96,6 +97,11 @@ class EqualizerVisualizerView @JvmOverloads constructor(
             barHeights[i] = 0.2f
         }
         invalidate()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (isPlaying && !UiMotion.isReduced(context)) startAnimation()
     }
 
     override fun onDetachedFromWindow() {

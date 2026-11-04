@@ -14,16 +14,6 @@
         android:layout_weight="1"
         android:background="@drawable/bg_shell">
 
-        <!-- Background music note decoration -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="♪"
-            android:textSize="220sp"
-            android:textColor="#18C8F34B"
-            android:layout_gravity="center"
-            android:rotation="-15" />
-
         <!-- Center content -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,18 +23,19 @@
             android:gravity="center"
             android:paddingHorizontal="40dp">
 
-            <!-- Big icon -->
+            <!-- App mark -->
             <FrameLayout
-                android:layout_width="128dp"
-                android:layout_height="128dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:background="@drawable/bg_card_accent"
-                android:layout_marginBottom="32dp">
+                android:layout_marginBottom="24dp">
                 <ImageView
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:layout_gravity="center"
-                    android:contentDescription="@string/song_artwork"
-                    android:src="@drawable/ic_artwork_default" />
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_music_note"
+                    app:tint="?attr/colorOnPrimary" />
             </FrameLayout>
 
             <TextView
@@ -85,7 +76,7 @@
                 <ImageView android:layout_width="22dp" android:layout_height="22dp"
                     android:layout_gravity="center" android:src="@drawable/ic_music_note"
                     android:contentDescription="@string/music_formats"
-                    app:tint="@color/accent_on" />
+                    app:tint="?attr/colorOnPrimary" />
             </FrameLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -140,7 +131,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textAllCaps="false"
-            android:textColor="@color/accent_on"
+            android:textColor="?attr/colorOnPrimary"
             android:background="@drawable/bg_card_accent"
             android:layout_marginBottom="12dp" />
 

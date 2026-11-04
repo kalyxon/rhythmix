@@ -7,9 +7,10 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.animation.LinearInterpolator
-import com.rhythmix.app.R
+import com.rhythmix.app.ui.UiMotion
 
 class LibraryArcGuideView @JvmOverloads constructor(
     context: Context,
@@ -21,14 +22,14 @@ class LibraryArcGuideView @JvmOverloads constructor(
     private val leftPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 1.4f * density
-        color = context.getColor(R.color.nav_inactive)
+        color = context.themeColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
         alpha = 40
     }
 
     private val rightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 1.1f * density
-        color = context.getColor(R.color.nav_inactive)
+        color = context.themeColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
         alpha = 28
     }
 
@@ -49,7 +50,7 @@ class LibraryArcGuideView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (!animator.isStarted) animator.start()
+        if (!UiMotion.isReduced(context) && !animator.isStarted) animator.start()
     }
 
     override fun onDetachedFromWindow() {
@@ -87,4 +88,10 @@ class LibraryArcGuideView @JvmOverloads constructor(
         canvas.drawPath(leftPath, leftPaint)
         canvas.drawPath(rightPath, rightPaint)
     }
+
+    private fun Context.themeColor(attribute: Int): Int =
+        TypedValue().let { value ->
+            theme.resolveAttribute(attribute, value, true)
+            value.data
+        }
 }

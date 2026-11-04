@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="112dp">
+            android:paddingHorizontal="18dp"
+            android:paddingBottom="120dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
                 android:paddingBottom="2dp"
                 android:text="Settings"
                 android:textColor="@color/text_primary"
-                android:textSize="26sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
             <TextView
                 android:layout_width="wrap_content"
@@ -37,32 +37,32 @@
                 android:layout_marginBottom="22dp"
                 android:text="Make Rhythmix feel like yours"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginBottom="10dp"
                 android:text="APPEARANCE"
                 android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/bg_card_soft"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Color theme"
                     android:textColor="@color/text_primary"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
                 <TextView
                     android:layout_width="wrap_content"
@@ -73,44 +73,45 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupThemes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true">
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeEmerald"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Olive Lime" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/themeEmerald"
-                        style="@style/Widget.Rhythmix.Chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="Olive Lime" />
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/themeCyber"
-                        style="@style/Widget.Rhythmix.Chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cyberpunk Neon" />
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/themeSunset"
-                        style="@style/Widget.Rhythmix.Chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sunset Amber" />
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/themeCyan"
-                        style="@style/Widget.Rhythmix.Chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Oceanic Cyan" />
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/themeAmoled"
-                        style="@style/Widget.Rhythmix.Chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="AMOLED Midnight" />
-                </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeCyber"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Cyberpunk Neon" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeSunset"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Sunset Amber" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeCyan"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Oceanic Cyan" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeAmoled"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="AMOLED Midnight" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeRose"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Rose Quartz" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeForest"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Forest Sage" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchThemeIndigo"
+                    style="@style/Widget.Rhythmix.ThemeSwitch"
+                    android:text="Indigo Dusk" />
 
                 <View
                     android:layout_width="match_parent"
@@ -126,12 +127,12 @@
                     android:text="Reduce motion"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    app:thumbTint="@color/chip_background"
-                    app:trackTint="@color/chip_background" />
+                    app:thumbTint="@color/theme_switch_thumb"
+                    app:trackTint="@color/theme_switch_track" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Turn off screen and list animations."
+                    android:text="Stops decorative loops, transitions, and list animations."
                     android:textColor="@color/text_tertiary"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -140,10 +141,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginBottom="10dp"
                 android:text="YOUR MUSIC"
                 android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -151,12 +152,13 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_card_soft"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
                     <FrameLayout
                         android:layout_width="42dp"
@@ -167,8 +169,9 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
+                            android:importantForAccessibility="no"
                             android:src="@drawable/ic_folder"
-                            app:tint="@color/accent_on" />
+                            app:tint="?attr/colorOnPrimary" />
                     </FrameLayout>
                     <LinearLayout
                         android:layout_width="0dp"
@@ -201,12 +204,13 @@
                     android:ellipsize="middle"
                     android:maxLines="1"
                     android:textColor="@color/text_tertiary"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
+                    android:baselineAligned="false"
                     android:orientation="horizontal">
                     <LinearLayout
                         android:layout_width="0dp"
@@ -222,13 +226,13 @@
                             android:layout_height="wrap_content"
                             android:text="TRACKS"
                             android:textColor="@color/text_tertiary"
-                            android:textSize="9sp" />
+                            android:textSize="11sp" />
                         <TextView
                             android:id="@+id/tv_song_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:textColor="@color/accent"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -246,37 +250,55 @@
                             android:layout_height="wrap_content"
                             android:text="PLAY EVENTS"
                             android:textColor="@color/text_tertiary"
-                            android:textSize="9sp" />
+                            android:textSize="11sp" />
                         <TextView
                             android:id="@+id/tv_event_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:textColor="@color/violet"
+                            android:textColor="?attr/colorSecondary"
                             android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_change_folder"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginTop="14dp"
-                    android:background="@drawable/bg_card_accent"
                     android:text="Change music folder"
                     android:textAllCaps="false"
-                    android:textColor="@color/accent_on"
-                    android:textStyle="bold" />
-                <Button
+                    android:textColor="?attr/colorPrimary"
+                    android:textStyle="bold"
+                    app:backgroundTint="?attr/colorSurfaceVariant"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp" />
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_rescan"
                     android:layout_width="match_parent"
                     android:layout_height="46dp"
                     android:layout_marginTop="6dp"
-                    android:background="@drawable/bg_button_surface"
                     android:text="Rescan folder"
                     android:textAllCaps="false"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="?attr/colorPrimary"
+                    app:backgroundTint="?attr/colorSurfaceVariant"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_restore_removed"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="6dp"
+                    android:text="Restore removed songs"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_secondary"
+                    app:backgroundTint="?attr/colorSurfaceVariant"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
             <TextView
@@ -287,7 +309,7 @@
                 android:layout_marginBottom="9dp"
                 android:text="DATA &amp; PRIVACY"
                 android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -308,7 +330,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
-                    android:textColor="@color/accent"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
                 <TextView
@@ -319,15 +341,18 @@
                     android:lineSpacingMultiplier="1.35"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_clear_data"
                     android:layout_width="match_parent"
                     android:layout_height="46dp"
                     android:layout_marginTop="14dp"
-                    android:background="@drawable/bg_button_danger"
                     android:text="Clear listening history"
                     android:textAllCaps="false"
-                    android:textColor="@color/red" />
+                    android:textColor="@color/red"
+                    app:backgroundTint="?attr/colorSurface"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

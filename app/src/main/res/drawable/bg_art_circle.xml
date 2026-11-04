@@ -3,7 +3,7 @@
     <gradient
         android:type="linear"
         android:angle="135"
-        android:startColor="@color/elevated"
-        android:endColor="@color/surface2" />
-    <stroke android:width="1dp" android:color="@color/surface_border" />
+        android:startColor="?attr/rhythmixSurfaceElevated"
+        android:endColor="?attr/colorSurfaceVariant" />
+    <stroke android:width="1dp" android:color="?attr/colorOutline" />
 </shape>

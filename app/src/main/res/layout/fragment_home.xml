@@ -150,7 +150,7 @@
             <FrameLayout
                 android:id="@+id/feature_card"
                 android:layout_width="match_parent"
-                android:layout_height="178dp"
+                android:layout_height="196dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/bg_card"
@@ -175,14 +175,17 @@
                     android:layout_height="match_parent"
                     android:gravity="bottom"
                     android:orientation="vertical"
-                    android:padding="18dp">
+                    android:paddingStart="18dp"
+                    android:paddingTop="18dp"
+                    android:paddingEnd="76dp"
+                    android:paddingBottom="18dp">
 
                     <TextView
                         android:id="@+id/tv_artist_see_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="YOUR OFFLINE MIX"
-                        android:textColor="@color/accent"
+                        android:textColor="?attr/colorPrimary"
                         android:textSize="9sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.12" />
@@ -216,13 +219,13 @@
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:layout_gravity="bottom|end"
-                    android:layout_margin="16dp"
+                    android:layout_margin="18dp"
                     android:background="@drawable/bg_play_btn"
                     android:contentDescription="Play featured song"
                     android:elevation="4dp"
                     android:padding="13dp"
                     android:src="@drawable/ic_play"
-                    app:tint="@color/accent_on" />
+                    app:tint="?attr/colorOnPrimary" />
             </FrameLayout>
 
             <LinearLayout
@@ -255,7 +258,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="0m"
-                        android:textColor="@color/accent"
+                        android:textColor="?attr/colorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>

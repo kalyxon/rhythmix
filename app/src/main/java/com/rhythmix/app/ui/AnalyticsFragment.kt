@@ -1,8 +1,10 @@
 package com.rhythmix.app.ui
 
-import android.graphics.Color
+import android.animation.ValueAnimator
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rhythmix.app.R
 import com.rhythmix.app.databinding.FragmentAnalyticsBinding
@@ -34,6 +37,11 @@ class AnalyticsFragment : Fragment() {
     private val DAYS      = 7
     // Day-label column width in dp
     private val DAY_COL_DP = 16
+    private var selectedPeriod = "week"
+    private var latestEvents: List<PlayEvent> = emptyList()
+    private var totalListeningAnimator: ValueAnimator? = null
+    private var displayedTotalListeningMinutes: Int? = null
+    private var lastTotalListeningTargetMinutes: Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAnalyticsBinding.inflate(inflater, container, false)
@@ -42,23 +50,52 @@ class AnalyticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        UiMotion.enter(binding.root)
 
-        val adapter = StatsAdapter()
+        val adapter = StatsAdapter { stats ->
+            val songs = viewModel.getSortedSongs()
+            val index = songs.indexOfFirst { it.id == stats.songId }
+            if (index >= 0) {
+                viewModel.playerController.playQueue(songs, index)
+                viewModel.navigate(AppScreen.Player)
+            }
+        }
         binding.rvTopSongs.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTopSongs.adapter = adapter
         binding.rvTopSongs.setHasFixedSize(false)
         // isNestedScrollingEnabled=false lets the parent ScrollView handle scrolling
         // while still measuring the RecyclerView to its FULL height (all items visible)
         binding.rvTopSongs.isNestedScrollingEnabled = false
+        UiMotion.animateList(binding.rvTopSongs)
+
+        listOf(
+            binding.periodWeek to "week",
+            binding.periodMonth to "month",
+            binding.periodYear to "year"
+        ).forEach { (chip, period) ->
+            chip.setOnClickListener {
+                selectedPeriod = period
+                updatePeriodControl()
+                refreshDashboard(adapter, latestEvents)
+            }
+        }
+        updatePeriodControl()
 
         viewModel.analytics.observe(viewLifecycleOwner) { data ->
+            latestEvents = data.playEvents
             refreshDashboard(adapter, data.playEvents)
+        }
+        viewModel.songs.observe(viewLifecycleOwner) {
+            refreshDashboard(adapter, latestEvents)
+        }
+        viewModel.reduceMotion.observe(viewLifecycleOwner) { enabled ->
+            binding.listeningRing.setMotionEnabled(!enabled)
         }
         // Update both time counters live while a song is playing (positionMs ticks every 200ms)
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             if (state.isPlaying) {
                 binding.tvTodayListening.text = fmtDur(viewModel.getTodayListeningTimeMs())
-                binding.tvTotalListening.text = fmtDur(viewModel.getTotalListeningTimeMs())
+                renderTotalListeningTime(viewModel.getTotalListeningTimeMs())
             }
         }
 
@@ -68,18 +105,46 @@ class AnalyticsFragment : Fragment() {
     // ── Dashboard ─────────────────────────────────────────────────────────────
 
     private fun refreshDashboard(adapter: StatsAdapter, events: List<PlayEvent>) {
+        val cutoff = periodStart()
+        val periodEvents = events.filter { cutoff == null || it.startedAt >= cutoff }
         binding.tvTodayListening.text  = fmtDur(viewModel.getTodayListeningTimeMs())
-        binding.tvTotalListening.text  = fmtDur(viewModel.getTotalListeningTimeMs())
-        binding.tvTotalPlays.text      = "${events.size}"
-        binding.tvUniqueSongs.text     = "${events.map { it.songId }.distinct().size}"
+        renderTotalListeningTime(viewModel.getTotalListeningTimeMs())
+        val activeDayStarts = events.asSequence()
+            .filter { it.listenedMs > 0L }
+            .map { event ->
+                Calendar.getInstance().apply {
+                    timeInMillis = event.startedAt
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
+            }
+            .toSet()
+        val activeDays = activeDayStarts.size
+        val averageActiveDay = if (activeDays > 0) {
+            events.sumOf { it.listenedMs } / activeDays
+        } else 0L
+        binding.tvActiveDayAverage.text = fmtDur(averageActiveDay)
+        val streak = currentListeningStreak(activeDayStarts)
+        binding.tvCurrentStreak.text = if (streak > 0) {
+            "🔥 $streak ${if (streak == 1) "day" else "days"} streak"
+        } else {
+            "🔥 Start a new streak"
+        }
+        binding.tvTotalPlays.text      = "${periodEvents.size}"
+        binding.tvUniqueSongs.text     = "${periodEvents.map { it.songId }.distinct().size}"
 
-        val done = events.count { it.completed }
-        binding.tvCompletionRate.text  = if (events.isNotEmpty()) "${done * 100 / events.size}%" else "—"
+        val done = periodEvents.count { it.completed }
+        binding.tvCompletionRate.text  =
+            if (periodEvents.isNotEmpty()) "${done * 100 / periodEvents.size}%" else "—"
 
-        val avg = if (events.isNotEmpty()) events.sumOf { it.listenedMs } / events.size else 0L
+        val avg = if (periodEvents.isNotEmpty()) {
+            periodEvents.sumOf { it.listenedMs } / periodEvents.size
+        } else 0L
         binding.tvAvgSession.text      = fmtShort(avg)
 
-        val peak = events
+        val peak = periodEvents
             .groupBy {
                 Calendar.getInstance().also { c -> c.timeInMillis = it.startedAt }
                     .get(Calendar.HOUR_OF_DAY)
@@ -90,7 +155,91 @@ class AnalyticsFragment : Fragment() {
         } else "—"
 
         buildHeatmap(events)
-        adapter.submitList(viewModel.computeSongStats(10))
+        binding.tvStatsPeriod.text = when (selectedPeriod) {
+            "week" -> "Most played · Last 7 days"
+            "month" -> "Most played · Last 30 days"
+            else -> "Most played · Last year"
+        }
+        adapter.submitList(viewModel.computeSongStats(10, cutoff))
+    }
+
+    private fun renderTotalListeningTime(totalMs: Long) {
+        val targetMinutes = TimeUnit.MILLISECONDS.toMinutes(totalMs).toInt().coerceAtLeast(0)
+        if (targetMinutes == lastTotalListeningTargetMinutes) return
+
+        val startMinutes = totalListeningAnimator?.animatedValue as? Int
+            ?: displayedTotalListeningMinutes
+            ?: 0
+        totalListeningAnimator?.cancel()
+        lastTotalListeningTargetMinutes = targetMinutes
+
+        if (UiMotion.isReduced(requireContext()) || startMinutes == targetMinutes) {
+            displayedTotalListeningMinutes = targetMinutes
+            binding.tvTotalListening.text = fmtDur(TimeUnit.MINUTES.toMillis(targetMinutes.toLong()))
+            totalListeningAnimator = null
+            return
+        }
+
+        totalListeningAnimator = ValueAnimator.ofInt(startMinutes, targetMinutes).apply {
+            duration = if (displayedTotalListeningMinutes == null) 900L else 650L
+            addUpdateListener { animator ->
+                val minutes = animator.animatedValue as Int
+                displayedTotalListeningMinutes = minutes
+                binding.tvTotalListening.text = fmtDur(TimeUnit.MINUTES.toMillis(minutes.toLong()))
+            }
+            start()
+        }
+    }
+
+    private fun currentListeningStreak(activeDayStarts: Set<Long>): Int {
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val streakDay = when {
+            activeDayStarts.contains(today.timeInMillis) -> today
+            activeDayStarts.contains(
+                (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }.timeInMillis
+            ) -> (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }
+            else -> return 0
+        }
+
+        var days = 0
+        while (activeDayStarts.contains(streakDay.timeInMillis)) {
+            days++
+            streakDay.add(Calendar.DAY_OF_YEAR, -1)
+        }
+        return days
+    }
+
+    private fun updatePeriodControl() {
+        listOf(
+            binding.periodWeek to "week",
+            binding.periodMonth to "month",
+            binding.periodYear to "year"
+        ).forEach { (option, period) ->
+            val selected = selectedPeriod == period
+            option.setBackgroundResource(
+                if (selected) R.drawable.bg_period_selected else R.drawable.bg_period_unselected
+            )
+            option.setTextColor(
+                if (selected) resolveThemeColor(com.google.android.material.R.attr.colorOnPrimary)
+                else requireContext().getColor(R.color.text_secondary)
+            )
+            option.isSelected = selected
+        }
+    }
+
+    private fun periodStart(): Long? {
+        val days = when (selectedPeriod) {
+            "week" -> 7
+            "month" -> 30
+            "year" -> 365
+            else -> return null
+        }
+        return Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -days) }.timeInMillis
     }
 
     // ── Heatmap ───────────────────────────────────────────────────────────────
@@ -115,6 +264,28 @@ class AnalyticsFragment : Fragment() {
         val cell = (CELL_DP * den).toInt()   // cell width and height in px
         val gap  = (GAP_DP  * den).toInt()   // gap between cells in px
         val dayColW = (DAY_COL_DP * den).toInt()
+        val heatmapBase = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+        val heatmapAccent = resolveThemeColor(androidx.appcompat.R.attr.colorPrimary)
+        listOf(
+            binding.heatmapLegend0,
+            binding.heatmapLegend1,
+            binding.heatmapLegend2,
+            binding.heatmapLegend3,
+            binding.heatmapLegend4
+        ).forEachIndexed { index, legend ->
+            val blend = when (index) {
+                0 -> 0f
+                1 -> 0.18f
+                2 -> 0.38f
+                3 -> 0.62f
+                else -> 0.88f
+            }
+            legend.background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 3f * den
+                setColor(ColorUtils.blendARGB(heatmapBase, heatmapAccent, blend))
+            }
+        }
 
         // ── 1. Build day buckets ─────────────────────────────────────────────
         val fmt      = SimpleDateFormat("yyyy-MM-dd", Locale.US)
@@ -160,7 +331,7 @@ class AnalyticsFragment : Fragment() {
             val tv = TextView(ctx).apply {
                 text = if (showLabel) dayNames[d] else ""
                 textSize = 7f
-                setTextColor(Color.parseColor("#555555"))
+                setTextColor(ctx.getColor(R.color.text_tertiary))
                 gravity = Gravity.END or Gravity.CENTER_VERTICAL
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -192,7 +363,7 @@ class AnalyticsFragment : Fragment() {
             val monthCell = TextView(ctx).apply {
                 text = if (showMonth) monthNames[weekStartMonth] else ""
                 textSize = 8f
-                setTextColor(Color.parseColor("#666666"))
+                setTextColor(ctx.getColor(R.color.text_tertiary))
                 gravity = Gravity.START or Gravity.CENTER_VERTICAL
                 layoutParams = LinearLayout.LayoutParams(cell, cell).also {
                     it.rightMargin = gap
@@ -220,19 +391,23 @@ class AnalyticsFragment : Fragment() {
                     listenMs < maxMs * 0.75 -> 3
                     else                    -> 4
                 }
-                val bgRes = when (intensity) {
-                    0    -> R.drawable.bg_heatmap_0
-                    1    -> R.drawable.bg_heatmap_1
-                    2    -> R.drawable.bg_heatmap_2
-                    3    -> R.drawable.bg_heatmap_3
-                    else -> R.drawable.bg_heatmap_4
+                val blend = when (intensity) {
+                    0 -> 0f
+                    1 -> 0.18f
+                    2 -> 0.38f
+                    3 -> 0.62f
+                    else -> 0.88f
                 }
 
                 val mins  = TimeUnit.MILLISECONDS.toMinutes(listenMs).toInt()
                 val label = if (listenMs > 0) "$mins min · $dateKey" else "No listening · $dateKey"
 
                 val cellView = View(ctx).apply {
-                    setBackgroundResource(bgRes)
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.RECTANGLE
+                        cornerRadius = 3f * den
+                        setColor(ColorUtils.blendARGB(heatmapBase, heatmapAccent, blend))
+                    }
                     layoutParams = LinearLayout.LayoutParams(cell, cell).also {
                         it.bottomMargin = gap
                     }
@@ -253,6 +428,12 @@ class AnalyticsFragment : Fragment() {
         binding.tvHeatmapSubtitle.text = "$activeDays active days in the past year"
     }
 
+    private fun resolveThemeColor(attribute: Int): Int {
+        val value = TypedValue()
+        requireContext().theme.resolveAttribute(attribute, value, true)
+        return value.data
+    }
+
     // ── Formatters ────────────────────────────────────────────────────────────
 
     private fun fmtDur(ms: Long): String {
@@ -267,5 +448,12 @@ class AnalyticsFragment : Fragment() {
         return if (m > 0) "${m}m" else "${s}s"
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        totalListeningAnimator?.cancel()
+        totalListeningAnimator = null
+        displayedTotalListeningMinutes = null
+        lastTotalListeningTargetMinutes = null
+        super.onDestroyView()
+        _binding = null
+    }
 }

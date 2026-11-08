@@ -5,230 +5,264 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_shell"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="18dp">
 
-    <!-- Top bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="8dp"
-        android:paddingTop="52dp"
-        android:paddingBottom="8dp"
-        android:gravity="center_vertical">
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="4dp">
 
         <ImageButton
             android:id="@+id/btn_back"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:src="@drawable/ic_chevron_down"
-            android:background="@drawable/bg_icon_btn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
             android:padding="11dp"
+            android:src="@drawable/ic_back"
             app:tint="@color/text_secondary" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:letterSpacing="0.16"
                 android:text="NOW PLAYING"
-                android:textSize="10sp"
-                android:textColor="@color/text_tertiary"
-                android:letterSpacing="0.18"/>
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <com.rhythmix.app.ui.view.EqualizerVisualizerView
+                android:id="@+id/equalizerView"
+                android:layout_width="28dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_sleep"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="5dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Sleep timer"
+            android:padding="11dp"
+            android:src="@drawable/ic_sleep_timer"
+            app:tint="@color/text_secondary" />
 
         <ImageButton
             android:id="@+id/btn_queue"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:src="@drawable/ic_queue"
-            android:background="@drawable/bg_icon_btn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Open library"
             android:padding="11dp"
+            android:src="@drawable/ic_queue"
             app:tint="@color/text_secondary" />
     </LinearLayout>
 
-    <!-- Album art - large square, soft gradient + glow -->
-    <FrameLayout
-        android:id="@+id/art_container"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/bg_art"
-        android:gravity="center"
-        android:elevation="14dp">
-
-        <TextView
-            android:id="@+id/tv_art_note"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="♪"
-            android:textSize="96sp"
-            android:textColor="#221ED760" />
-
-        <TextView
-            android:id="@+id/tv_art_letter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="80sp"
-            android:textStyle="bold"
-            android:textColor="#55FFFFFF" />
-    </FrameLayout>
-
-    <!-- Song info -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="28dp"
-        android:paddingBottom="24dp"
-        android:gravity="center_vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="190dp"
+        android:paddingHorizontal="12dp">
 
-        <LinearLayout
+        <com.rhythmix.app.ui.view.PlayerOrbitView
+            android:id="@+id/progress_orbit"
             android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="Track playback progress"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/orbit_shuffle_guide"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="—"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:letterSpacing="-0.01"
-                android:textColor="@color/text_primary"
-                android:maxLines="1"
-                android:ellipsize="end" />
-            <TextView
-                android:id="@+id/tv_artist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </LinearLayout>
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.14" />
 
-        <ImageButton
-            android:id="@+id/btn_like"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:src="@drawable/ic_heart"
-            android:background="@drawable/bg_icon_btn"
-            android:padding="11dp"
-            app:tint="@color/text_tertiary" />
-    </LinearLayout>
-
-    <!-- Seek bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="20dp">
-
-        <SeekBar
-            android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/orbit_repeat_guide"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:progressTint="@color/accent"
-            android:thumbTint="@color/accent"
-            android:progressBackgroundTint="@color/surface2"
-            android:max="1000" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.86" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/orbit_controls_guide"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="6dp">
-            <TextView
-                android:id="@+id/tv_position"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0:00"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary"
-                android:fontFamily="monospace" />
-            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
-            <TextView
-                android:id="@+id/tv_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0:00"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary"
-                android:fontFamily="monospace" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Controls -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="28dp"
-        android:gravity="center_vertical">
+            app:layout_constraintGuide_percent="0.86" />
 
         <ImageButton
             android:id="@+id/btn_shuffle"
             android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Shuffle"
+            android:padding="11dp"
             android:src="@drawable/ic_shuffle"
-            android:background="@null"
-            android:padding="10dp"
-            app:tint="@color/text_tertiary" />
-
-        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/btn_prev"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@drawable/ic_skip_prev"
-            android:background="@null"
-            android:padding="10dp"
-            app:tint="@color/text_primary" />
-
-        <!-- Big accent play button -->
-        <ImageButton
-            android:id="@+id/btn_play"
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:src="@drawable/ic_play"
-            android:background="@drawable/bg_play_btn"
-            android:padding="20dp"
-            android:elevation="10dp"
-            app:tint="@color/accent_on" />
-
-        <ImageButton
-            android:id="@+id/btn_next"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@drawable/ic_skip_next"
-            android:background="@null"
-            android:padding="10dp"
-            app:tint="@color/text_primary" />
-
-        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+            app:layout_constraintBottom_toBottomOf="@id/orbit_controls_guide"
+            app:layout_constraintEnd_toEndOf="@id/orbit_shuffle_guide"
+            app:layout_constraintStart_toStartOf="@id/orbit_shuffle_guide"
+            app:layout_constraintTop_toTopOf="@id/orbit_controls_guide"
+            app:tint="?attr/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btn_repeat"
             android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Repeat"
+            android:padding="11dp"
             android:src="@drawable/ic_repeat"
-            android:background="@null"
-            android:padding="10dp"
-            app:tint="@color/text_tertiary" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="@id/orbit_controls_guide"
+            app:layout_constraintEnd_toEndOf="@id/orbit_repeat_guide"
+            app:layout_constraintStart_toStartOf="@id/orbit_repeat_guide"
+            app:layout_constraintTop_toTopOf="@id/orbit_controls_guide"
+            app:tint="?attr/colorPrimary" />
 
+        <FrameLayout
+            android:id="@+id/art_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_player_record"
+            android:clipToOutline="true"
+            android:contentDescription="Change song artwork"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.64">
+
+            <ImageView
+                android:id="@+id/iv_player_art"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_artwork_circle_placeholder"
+                android:clipToOutline="true"
+                android:contentDescription="@string/song_artwork"
+                android:scaleType="centerCrop"
+                android:scaleX="1.42"
+                android:scaleY="1.42"
+                android:src="@drawable/ic_artwork_default" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="48dp">
+
+            <TextView
+                android:id="@+id/tv_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="—"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="—"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_like"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Toggle favorite"
+            android:padding="12dp"
+            android:src="@drawable/ic_heart"
+            app:tint="@color/text_tertiary" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="8dp">
+
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="Previous track"
+            android:padding="12dp"
+            android:src="@drawable/ic_skip_prev"
+            app:tint="@color/text_primary" />
+
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@null"
+            android:contentDescription="Play or pause"
+            android:padding="10dp"
+            android:src="@drawable/ic_play"
+            app:tint="@color/text_primary" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="Next track"
+            android:padding="12dp"
+            android:src="@drawable/ic_skip_next"
+            app:tint="@color/text_primary" />
+
+    </LinearLayout>
 </LinearLayout>

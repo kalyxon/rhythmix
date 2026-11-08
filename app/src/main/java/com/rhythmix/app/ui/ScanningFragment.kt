@@ -21,6 +21,7 @@ class ScanningFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        UiMotion.enter(binding.root)
         viewModel.scanProgress.observe(viewLifecycleOwner) { p ->
             if (p != null && p.total > 0) {
                 val pct = p.scanned * 100 / p.total

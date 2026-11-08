@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_shell"
@@ -13,13 +14,13 @@
         android:layout_height="104dp"
         android:background="@drawable/bg_card_accent"
         android:layout_marginBottom="36dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_gravity="center"
-            android:text="♪"
-            android:textSize="52sp"
-            android:textColor="@color/accent_on" />
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_music_note"
+            app:tint="?attr/colorOnPrimary" />
     </FrameLayout>
 
     <TextView
@@ -47,8 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:max="100"
-        android:progressTint="@color/accent"
-        android:progressBackgroundTint="@color/surface2"
+        android:progressTint="?attr/colorPrimary"
+        android:progressBackgroundTint="?attr/colorSurfaceVariant"
         android:layout_marginBottom="16dp" />
 
     <TextView
@@ -58,6 +59,6 @@
         android:text="0%"
         android:textSize="48sp"
         android:textStyle="bold"
-        android:textColor="@color/accent"
+        android:textColor="?attr/colorPrimary"
         android:fontFamily="monospace" />
 </LinearLayout>

@@ -13,23 +13,138 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_theme_emerald"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_theme_emerald"
         android:supportsRtl="true"
         android:theme="@style/Theme.Rhythmix">
 
-        <!-- Main Activity -->
+        <!-- Theme-specific launcher entries keep the launcher and system splash in sync. -->
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity-alias
+            android:name=".ui.MainActivityEmerald"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_emerald"
+            android:roundIcon="@mipmap/ic_launcher_theme_emerald"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityCyber"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_cyber"
+            android:roundIcon="@mipmap/ic_launcher_theme_cyber"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Cyberpunk">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivitySunset"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_sunset"
+            android:roundIcon="@mipmap/ic_launcher_theme_sunset"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Sunset">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityCyan"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_cyan"
+            android:roundIcon="@mipmap/ic_launcher_theme_cyan"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Cyan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityAmoled"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_amoled"
+            android:roundIcon="@mipmap/ic_launcher_theme_amoled"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Amoled">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityRose"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_rose"
+            android:roundIcon="@mipmap/ic_launcher_theme_rose"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Rose">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityForest"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_forest"
+            android:roundIcon="@mipmap/ic_launcher_theme_forest"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Forest">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".ui.MainActivityIndigo"
+            android:targetActivity=".ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_theme_indigo"
+            android:roundIcon="@mipmap/ic_launcher_theme_indigo"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Rhythmix.Indigo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <!-- Playback Service (foreground, keeps playing when app backgrounded) -->
         <service

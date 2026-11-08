@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="rhythmixSurfaceElevated" format="color" />
+    <attr name="rhythmixNavigationSurface" format="color" />
+    <attr name="rhythmixPlayerArtworkTint" format="color" />
+    <attr name="rhythmixPlayerScrimStart" format="color" />
+    <attr name="rhythmixPlayerScrimCenter" format="color" />
+    <attr name="rhythmixPlayerScrimEnd" format="color" />
+</resources>

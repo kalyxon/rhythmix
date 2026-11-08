@@ -12,13 +12,16 @@ data class PlayEvent(
 )
 
 /**
- * Root analytics file — serialised as JSON and saved in the music folder.
- * Schema is kept identical to the web app so data is portable between platforms.
+ * Root analytics file — serialized as JSON and saved in the music folder.
+ * Shared analytics fields remain portable; the app also persists album customization state.
  */
 data class AnalyticsData(
     val schemaVersion: Int = 1,
     val lastSyncAt: Long = System.currentTimeMillis(),
-    val playEvents: List<PlayEvent> = emptyList()
+    val playEvents: List<PlayEvent> = emptyList(),
+    val albums: List<Album> = emptyList(),
+    val favoriteSongIds: List<String> = emptyList(),
+    val deletedSmartMixIds: List<String> = emptyList()
 )
 
 /** Lightweight summary used by the dashboard/analytics UI */

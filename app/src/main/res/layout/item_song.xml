@@ -21,16 +21,15 @@
             android:id="@+id/art_bg"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:background="@drawable/bg_art"
+            android:background="@drawable/bg_artwork_placeholder"
             android:layout_marginEnd="14dp">
-            <TextView
-                android:id="@+id/tv_art_letter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/white" />
+            <ImageView
+                android:id="@+id/iv_artwork"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/song_artwork"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_artwork_default" />
         </FrameLayout>
 
         <LinearLayout

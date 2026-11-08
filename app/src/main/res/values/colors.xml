@@ -1,38 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ===== Base surfaces (true-black, layered depth like Spotify/Apple Music) ===== -->
-    <color name="bg">#0A0A0B</color>
-    <color name="surface">#161618</color>
-    <color name="surface2">#212125</color>
-    <color name="elevated">#2B2B30</color>
-    <color name="nav_bg">#101012</color>
-    <color name="surface_border">#26FFFFFF</color>
-    <color name="hairline">#14FFFFFF</color>
+    <!-- ===== Base surfaces ===== -->
+    <color name="bg">#171A10</color>
+    <color name="surface">#202417</color>
+    <color name="surface2">#2A301D</color>
+    <color name="elevated">#343B24</color>
+    <color name="nav_bg">#202516</color>
+    <color name="surface_border">#33D6E4B0</color>
+    <color name="hairline">#1EFFFFFF</color>
 
     <!-- ===== Text ===== -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#A8A8AF</color>
-    <color name="text_tertiary">#6E6E77</color>
+    <color name="text_primary">#F5F5E9</color>
+    <color name="text_secondary">#B8BCA4</color>
+    <color name="text_tertiary">#7F866C</color>
 
-    <!-- ===== Primary accent: green ===== -->
-    <color name="accent">#1ED760</color>
-    <color name="accent_light">#3BE87A</color>
-    <color name="accent_dark">#12A34A</color>
-    <color name="accent_dim">#17281D</color>
-    <color name="accent_on">#04140A</color>
+    <!-- ===== Theme 1: Emerald (Default Spotify) ===== -->
+    <color name="emerald_accent">#C8F34B</color>
+    <color name="emerald_light">#D8FF69</color>
+    <color name="emerald_dark">#9FC630</color>
+    <color name="emerald_dim">#303A1A</color>
+    <color name="emerald_on">#1B2010</color>
 
-    <!-- ===== Secondary accents (used for stat variety) ===== -->
+    <!-- ===== Theme 2: Cyberpunk Neon ===== -->
+    <color name="cyber_accent">#B026FF</color>
+    <color name="cyber_light">#E056FF</color>
+    <color name="cyber_dark">#7900C2</color>
+    <color name="cyber_dim">#2A0A3D</color>
+    <color name="cyber_pink">#FF2E93</color>
+
+    <!-- ===== Theme 3: Sunset Amber ===== -->
+    <color name="sunset_accent">#FF7A00</color>
+    <color name="sunset_light">#FFA043</color>
+    <color name="sunset_dark">#CC5200</color>
+    <color name="sunset_dim">#3B1A00</color>
+    <color name="sunset_coral">#FF3D57</color>
+
+    <!-- ===== Theme 4: Oceanic Cyan ===== -->
+    <color name="cyan_accent">#00F2FE</color>
+    <color name="cyan_light">#00D4FF</color>
+    <color name="cyan_dark">#0099B8</color>
+    <color name="cyan_dim">#002C38</color>
+    <color name="cyan_blue">#4FACFE</color>
+
+    <!-- ===== Theme 5: AMOLED Midnight ===== -->
+    <color name="amoled_bg">#000000</color>
+    <color name="amoled_surface">#0D0D0E</color>
+    <color name="amoled_accent">#7C4DFF</color>
+    <color name="amoled_light">#B388FF</color>
+    <color name="amoled_dark">#536DFE</color>
+    <color name="amoled_dim">#1D153B</color>
+    <color name="amoled_surface2">#141416</color>
+    <color name="amoled_elevated">#1C1C20</color>
+    <color name="amoled_nav">#09090A</color>
+    <color name="amoled_border">#33FFFFFF</color>
+
+    <!-- ===== Coordinated dark surfaces for each accent ===== -->
+    <color name="cyber_bg">#100D16</color>
+    <color name="cyber_surface">#181320</color>
+    <color name="cyber_surface2">#221A2B</color>
+    <color name="cyber_elevated">#2C2138</color>
+    <color name="cyber_nav">#17111E</color>
+    <color name="cyber_border">#33E056FF</color>
+
+    <color name="sunset_bg">#1B120C</color>
+    <color name="sunset_surface">#26180F</color>
+    <color name="sunset_surface2">#352316</color>
+    <color name="sunset_elevated">#46301D</color>
+    <color name="sunset_nav">#23160D</color>
+    <color name="sunset_border">#33FFA043</color>
+
+    <color name="cyan_bg">#08151A</color>
+    <color name="cyan_surface">#10222A</color>
+    <color name="cyan_surface2">#18303A</color>
+    <color name="cyan_elevated">#21424D</color>
+    <color name="cyan_nav">#0D1D23</color>
+    <color name="cyan_border">#3300D4FF</color>
+
+    <!-- ===== Additional themes ===== -->
+    <color name="rose_accent">#FF6F91</color>
+    <color name="rose_light">#FF9DB2</color>
+    <color name="rose_dim">#421E2B</color>
+    <color name="rose_bg">#190F14</color>
+    <color name="rose_surface">#25151D</color>
+    <color name="rose_surface2">#321C27</color>
+    <color name="rose_elevated">#442532</color>
+    <color name="rose_nav">#21121A</color>
+    <color name="rose_border">#33FF9DB2</color>
+    <color name="rose_secondary">#D69CFF</color>
+
+    <color name="forest_accent">#7DE2A8</color>
+    <color name="forest_light">#A5F0C3</color>
+    <color name="forest_dim">#183A2A</color>
+    <color name="forest_bg">#0D1713</color>
+    <color name="forest_surface">#15231C</color>
+    <color name="forest_surface2">#1D3026</color>
+    <color name="forest_elevated">#284033</color>
+    <color name="forest_nav">#111D17</color>
+    <color name="forest_border">#33A5F0C3</color>
+    <color name="forest_secondary">#D9C77E</color>
+
+    <color name="indigo_accent">#8C9EFF</color>
+    <color name="indigo_light">#B3BEFF</color>
+    <color name="indigo_dim">#25294D</color>
+    <color name="indigo_bg">#101222</color>
+    <color name="indigo_surface">#191B32</color>
+    <color name="indigo_surface2">#232646</color>
+    <color name="indigo_elevated">#30335B</color>
+    <color name="indigo_nav">#15172B</color>
+    <color name="indigo_border">#33B3BEFF</color>
+    <color name="indigo_secondary">#63D9E8</color>
+    <color name="emerald_player_tint">#273A3020</color>
+    <color name="cyber_player_tint">#27251632</color>
+    <color name="sunset_player_tint">#273A2418</color>
+    <color name="cyan_player_tint">#271A2D35</color>
+    <color name="amoled_player_tint">#27202028</color>
+    <color name="rose_player_tint">#27352029</color>
+    <color name="forest_player_tint">#27172D22</color>
+    <color name="indigo_player_tint">#27212642</color>
+    <color name="emerald_player_scrim_start">#B81A1D14</color>
+    <color name="emerald_player_scrim_center">#AA202417</color>
+    <color name="emerald_player_scrim_end">#C21A1D14</color>
+    <color name="cyber_player_scrim_start">#B8130F19</color>
+    <color name="cyber_player_scrim_center">#AA181220</color>
+    <color name="cyber_player_scrim_end">#C2130F19</color>
+    <color name="sunset_player_scrim_start">#B81B120C</color>
+    <color name="sunset_player_scrim_center">#AA26180F</color>
+    <color name="sunset_player_scrim_end">#C21B120C</color>
+    <color name="cyan_player_scrim_start">#B808151A</color>
+    <color name="cyan_player_scrim_center">#AA10222A</color>
+    <color name="cyan_player_scrim_end">#C208151A</color>
+    <color name="amoled_player_scrim_start">#B8000000</color>
+    <color name="amoled_player_scrim_center">#AA0D0D0E</color>
+    <color name="amoled_player_scrim_end">#C2000000</color>
+    <color name="rose_player_scrim_start">#B8190F14</color>
+    <color name="rose_player_scrim_center">#AA25151D</color>
+    <color name="rose_player_scrim_end">#C2190F14</color>
+    <color name="forest_player_scrim_start">#B80D1713</color>
+    <color name="forest_player_scrim_center">#AA15231C</color>
+    <color name="forest_player_scrim_end">#C20D1713</color>
+    <color name="indigo_player_scrim_start">#B8101222</color>
+    <color name="indigo_player_scrim_center">#AA191B32</color>
+    <color name="indigo_player_scrim_end">#C2101222</color>
+
+    <!-- ===== Default Accent maps to Emerald ===== -->
+    <color name="accent">#C8F34B</color>
+    <color name="accent_light">#D8FF69</color>
+    <color name="accent_dark">#9FC630</color>
+    <color name="accent_dim">#303A1A</color>
+    <color name="accent_on">#1B2010</color>
+
+    <!-- ===== Secondary accents ===== -->
     <color name="violet">#A78BFA</color>
     <color name="violet_light">#C4B1FF</color>
     <color name="violet_dim">#241E38</color>
-
     <color name="amber">#FBBF24</color>
     <color name="amber_dim">#332A12</color>
-
     <color name="green">#34E4A0</color>
 
-    <!-- ===== Heatmap scale (dim → bright, matches accent) ===== -->
+    <!-- ===== Heatmap scale ===== -->
     <color name="heatmap_0">#1B1B1F</color>
     <color name="heatmap_1">#163A26</color>
     <color name="heatmap_2">#1F6B41</color>
@@ -42,10 +168,11 @@
     <!-- ===== Status ===== -->
     <color name="red">#FF6B6B</color>
     <color name="red_dim">#33191A</color>
+    <color name="heart_active">#FF3B30</color>
 
     <!-- ===== Nav ===== -->
-    <color name="nav_active">#1ED760</color>
-    <color name="nav_inactive">#6E6E77</color>
+    <color name="nav_active">#C8F34B</color>
+    <color name="nav_inactive">#8A9076</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

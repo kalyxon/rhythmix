@@ -157,12 +157,12 @@ No sync. No cloud. No internet. Everything lives in your music folder.
 The current version parses metadata from filenames (`Artist - Title.mp3`).  
 To read actual ID3 tags, add [JAudioTagger](https://www.jthink.net/jaudiotagger/) or use `MediaMetadataRetriever` with additional keys (`METADATA_KEY_ARTIST`, `METADATA_KEY_TITLE`, etc.) — already imported in `StorageManager.kt`.
 
-### Add album art
-Use `MediaMetadataRetriever.getEmbeddedPicture()` to extract cover art bytes from the audio file, then load with Glide:
-```kotlin
-val art = mmr.embeddedPicture
-Glide.with(context).load(art).into(imageView)
-```
+### Album artwork (offline)
+Track rows, the mini-player, the full player, and generated album collages use artwork embedded in local audio files when available. Tracks without embedded art get one of twelve bundled music photographs, selected consistently per track; neither playback nor fallback artwork needs a network connection.
+
+Tap the featured home card or a song's artwork to choose a replacement image with Android's document picker. Rhythmix copies the image into the selected music folder's `Rhythmix Artwork` directory, so the cover remains available offline, and remembers the association for that track. Custom albums can also optionally use a gallery image; leaving the cover unset keeps the generated collage.
+
+Bundled cover photographs are from Unsplash and are used under the [Unsplash License](https://unsplash.com/license): [studio](https://images.unsplash.com/photo-1511379938547-c1f69419868d), [concert](https://images.unsplash.com/photo-1506157786151-b8491531f063), [vocalist](https://images.unsplash.com/photo-1516280440614-37939bbacd81), [guitarist](https://images.unsplash.com/photo-1510915361894-db8b60106cb1), [stage](https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad), [live music](https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f), [crowd](https://images.unsplash.com/photo-1514525253161-7a46d19cd819), [performer](https://images.unsplash.com/photo-1516450360452-9312f5e86fc7), [headphones](https://images.unsplash.com/photo-1487180144351-b8472da7d491), [DJ](https://images.unsplash.com/photo-1470225620780-dba8ba36b745), [guitar](https://images.unsplash.com/photo-1501612780327-45045538702b), and [musician](https://images.unsplash.com/photo-1483412033650-1015ddeb83d1).
 
 ### Add a playlist feature
 Store playlists as additional fields in `AnalyticsData` — they'll be persisted to the same JSON file automatically.
